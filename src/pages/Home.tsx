@@ -34,7 +34,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-black text-white">
       {/* Hero Section */}
-      <section className="relative h-screen min-h-[600px] flex items-center justify-center px-6 overflow-hidden">
+      <section className="relative h-screen min-h-[800px] flex items-center justify-center px-6 overflow-hidden">
         {/* Background Atmosphere */}
         <div className="absolute inset-0 z-0">
           <video
@@ -54,18 +54,11 @@ export default function Home() {
         </div>
 
         {/* Content */}
-        <div className="relative z-20 max-w-4xl text-center animate-fade-in flex flex-col items-center justify-center h-full pb-8 md:pb-0">
+        <div className="relative z-20 w-full max-w-7xl mx-auto flex flex-col items-center justify-center h-full pb-8 md:pb-0 pt-20">
           {/* 1. Presenter */}
-          <p className="uppercase tracking-[0.3em] text-[10px] md:text-xs text-zinc-500 mb-3 md:mb-4 font-medium opacity-80">
+          <p className="uppercase tracking-[0.3em] text-[10px] md:text-xs text-zinc-500 mb-4 font-medium opacity-80 animate-fade-in-up">
             Sahara Community Presents
           </p>
-
-          {/* 2. Logo */}
-          <img
-            src={soeLogo}
-            alt="SOE Super League Logo"
-            className="w-16 md:w-24 mb-4 md:mb-6 object-contain drop-shadow-xl"
-          />
 
           {/* 3. Season */}
           <div className="flex items-center justify-center gap-4 mb-3 md:mb-4 opacity-90">

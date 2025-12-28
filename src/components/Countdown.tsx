@@ -51,18 +51,45 @@ export default function Countdown() {
   }
 
   return (
-    <div className="grid grid-cols-4 gap-4 max-w-md mx-auto">
-      {Object.entries(timeLeft).map(([label, value]) => (
-        <div
-          key={label}
-          className="bg-zinc-900 rounded-lg py-4"
-        >
-          <div className="text-2xl font-bold">{value}</div>
-          <div className="text-xs uppercase tracking-wide text-zinc-400">
-            {label}
-          </div>
+    <div className="flex flex-col items-center animate-fade-in-up animation-delay-300">
+      <div className="text-xs md:text-sm font-bold uppercase tracking-[0.3em] text-yellow-500 mb-6 drop-shadow-md">
+        Kickoff In
+      </div>
+      <div className="flex items-center gap-3 md:gap-6 p-4 md:p-6 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+        <div className="flex flex-col items-center min-w-[60px] md:min-w-[80px]">
+          <span className="text-3xl md:text-5xl font-black text-white tabular-nums leading-none tracking-tight">
+            {String(timeLeft.days).padStart(2, '0')}
+          </span>
+          <span className="text-[10px] md:text-xs text-zinc-500 uppercase tracking-widest mt-2 font-medium">Days</span>
         </div>
-      ))}
+
+        <div className="h-8 md:h-12 w-[1px] bg-white/10" />
+
+        <div className="flex flex-col items-center min-w-[60px] md:min-w-[80px]">
+          <span className="text-3xl md:text-5xl font-black text-white tabular-nums leading-none tracking-tight">
+            {String(timeLeft.hours).padStart(2, '0')}
+          </span>
+          <span className="text-[10px] md:text-xs text-zinc-500 uppercase tracking-widest mt-2 font-medium">Hrs</span>
+        </div>
+
+        <div className="h-8 md:h-12 w-[1px] bg-white/10" />
+
+        <div className="flex flex-col items-center min-w-[60px] md:min-w-[80px]">
+          <span className="text-3xl md:text-5xl font-black text-white tabular-nums leading-none tracking-tight">
+            {String(timeLeft.minutes).padStart(2, '0')}
+          </span>
+          <span className="text-[10px] md:text-xs text-zinc-500 uppercase tracking-widest mt-2 font-medium">Mins</span>
+        </div>
+
+        <div className="h-8 md:h-12 w-[1px] bg-white/10" />
+
+        <div className="flex flex-col items-center min-w-[60px] md:min-w-[80px]">
+          <span className="text-3xl md:text-5xl font-black text-yellow-500 tabular-nums leading-none tracking-tight">
+            {String(timeLeft.seconds).padStart(2, '0')}
+          </span>
+          <span className="text-[10px] md:text-xs text-zinc-500 uppercase tracking-widest mt-2 font-medium">Secs</span>
+        </div>
+      </div>
     </div>
   );
 }

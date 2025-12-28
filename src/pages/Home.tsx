@@ -74,11 +74,11 @@ export default function Home() {
           <div className="flex flex-col items-center gap-1">
             {/* Season Divider */}
             <div className="flex items-center gap-3 opacity-90 mb-1">
-              <div className="h-[1px] w-6 bg-gradient-to-r from-transparent to-yellow-500/50" />
-              <p className="text-[10px] md:text-xs font-bold tracking-[0.5em] text-yellow-500 uppercase whitespace-nowrap pl-1">
+              <div className="h-[1px] w-8 md:w-16 bg-gradient-to-r from-transparent to-yellow-500/50" />
+              <p className="text-sm md:text-base font-bold tracking-[0.5em] text-yellow-500 uppercase whitespace-nowrap pl-1 shadow-black drop-shadow-sm">
                 Season VII
               </p>
-              <div className="h-[1px] w-6 bg-gradient-to-l from-transparent to-yellow-500/50" />
+              <div className="h-[1px] w-8 md:w-16 bg-gradient-to-l from-transparent to-yellow-500/50" />
             </div>
 
             {/* Main Title */}
@@ -89,12 +89,12 @@ export default function Home() {
         </div>
 
         {/* 4. Slogan */}
-        <p className="text-xs md:text-sm font-medium tracking-widest text-white mb-2 opacity-90">
+        <p className="text-base md:text-2xl font-medium tracking-widest text-white mb-2 md:mb-4 opacity-100 drop-shadow-md">
           New rivalries. Same passion.
         </p>
 
-        {/* 5. Description - Max 2 lines */}
-        <p className="hidden md:block text-[10px] text-zinc-400 max-w-lg mx-auto mb-4 leading-relaxed font-light line-clamp-2">
+        {/* 5. Description - Compacted */}
+        <p className="hidden md:block text-sm text-zinc-300 max-w-2xl mx-auto mb-4 leading-relaxed font-normal line-clamp-2 drop-shadow">
           The premier inter-department football league of the School of Engineering.
           Where rivalry meets passion in a battle for glory.
         </p>
@@ -103,7 +103,7 @@ export default function Home() {
         <div className="flex flex-col items-center gap-4">
           <a
             href="/fixtures"
-            className="text-[10px] uppercase tracking-widest text-yellow-500 hover:text-white transition-colors border-b border-yellow-500/30 pb-0.5 hover:border-white"
+            className="text-xs md:text-sm uppercase tracking-widest text-yellow-500 hover:text-white transition-colors border-b-2 border-yellow-500/50 pb-1 hover:border-white font-bold"
           >
             View Full Fixtures →
           </a>

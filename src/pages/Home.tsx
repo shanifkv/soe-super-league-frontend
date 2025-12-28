@@ -1,7 +1,36 @@
+import { useState, useRef } from "react";
 import soeLogo from "../assets/soe-super-league-logo.png";
 import Countdown from "../components/Countdown";
 
+import FixturesSection from "../components/FixturesSection";
+
 export default function Home() {
+  const [isMuted, setIsMuted] = useState(true);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const toggleAudio = () => {
+    const audio = audioRef.current;
+    const video = videoRef.current;
+    if (!audio) return;
+
+    if (isMuted) {
+      // Unmuting: Start playback explicitly & sync
+      if (video) video.currentTime = 0; // Restart video to sync with audio start
+      audio.volume = 0.5; // Cap volume at 50%
+      audio.muted = false;
+      audio.play().then(() => {
+        setIsMuted(false);
+      }).catch((error) => {
+        console.error("Audio playback failed:", error);
+      });
+    } else {
+      // Muting: Pause playback
+      audio.pause();
+      setIsMuted(true);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-black text-white">
       {/* Hero Section */}
@@ -9,6 +38,7 @@ export default function Home() {
         {/* Background Atmosphere */}
         <div className="absolute inset-0 z-0">
           <video
+            ref={videoRef}
             autoPlay
             loop
             muted
@@ -75,7 +105,29 @@ export default function Home() {
             <Countdown />
           </div>
         </div>
+
+        {/* Audio Control */}
+        <button
+          onClick={toggleAudio}
+          className="absolute bottom-8 right-8 z-30 p-3 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all duration-300 text-white group cursor-pointer"
+          aria-label={isMuted ? "Unmute" : "Mute"}
+        >
+          {isMuted ? (
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75 19.5 12m0 0 2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6 4.75-4.75a.75.75 0 0 1 1.286.53v15.88a.75.75 0 0 1-1.286.53L4.5 13.5H2.25a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 1 .75-.75h2.25Z" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" />
+            </svg>
+          )}
+        </button>
+
+        <audio ref={audioRef} loop src="/stadium-atmosphere.mp3" />
       </section>
+
+      {/* Upcoming Fixtures Section */}
+      <FixturesSection />
     </main>
   );
 }

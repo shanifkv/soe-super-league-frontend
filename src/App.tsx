@@ -7,6 +7,9 @@ import Standings from "./pages/Standings";
 import { AuthProvider } from "./context/AuthContext";
 import AdminLayout from "./components/admin/AdminLayout";
 import Login from "./pages/admin/Login";
+import Dashboard from "./pages/admin/Dashboard";
+import MatchControl from "./pages/admin/MatchControl";
+import { Navigate } from "react-router-dom";
 
 // Layout for public pages (with Header)
 const PublicLayout = () => (
@@ -35,8 +38,9 @@ export default function App() {
         <Route path="/admin/login" element={<Login />} />
 
         <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<div className="text-zinc-500">Select an option from the sidebar to begin.</div>} />
-          <Route path="dashboard" element={<div className="text-white text-xl font-bold">Live Match Dashboard (Coming Soon)</div>} />
+          <Route index element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="match/:id" element={<MatchControl />} />
         </Route>
       </Routes>
     </AuthProvider>

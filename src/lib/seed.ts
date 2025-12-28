@@ -1,30 +1,46 @@
 import { doc, writeBatch, Timestamp } from "firebase/firestore";
 import { db } from "./firebase";
 
-// Hardcoded data from our frontend components to seed the DB
+// Real SOE Super League Teams
 const SEED_TEAMS = [
-    { id: "mec", name: "Mech Bulls", shortName: "MEC", logo: "/team-logos/mech-bulls.png", group: "A", stats: { played: 3, won: 2, drawn: 1, lost: 0, gf: 5, ga: 2, points: 7 } },
-    { id: "civ", name: "Civil Titans", shortName: "CIV", logo: "/team-logos/civil-titans.png", group: "A", stats: { played: 3, won: 2, drawn: 0, lost: 1, gf: 4, ga: 3, points: 6 } },
-    { id: "cs", name: "CS-IT Cyber", shortName: "CS", logo: "/team-logos/cs-it-cyber.png", group: "B", stats: { played: 3, won: 3, drawn: 0, lost: 0, gf: 8, ga: 1, points: 9 } },
-    { id: "eee", name: "EEE-EC Shockers", shortName: "EEE", logo: "/team-logos/eee-ec-shockers.png", group: "B", stats: { played: 3, won: 1, drawn: 1, lost: 1, gf: 3, ga: 4, points: 4 } },
+    { id: "malabaries", name: "FC MALABARIES", shortName: "FCM", logo: "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-007.png", group: "A", stats: { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 } },
+    { id: "aetoz", name: "AETOZ FC", shortName: "ATZ", logo: "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-008.png", group: "A", stats: { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 } },
+    { id: "fumingo", name: "CLUB DE FUMINGO", shortName: "CDF", logo: "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-002.png", group: "B", stats: { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 } },
+    { id: "gunners", name: "GUNNERS FC", shortName: "GFC", logo: "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-003.png", group: "B", stats: { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 } },
+    { id: "palliyangadi", name: "PALLIYANGADI FC", shortName: "PFC", logo: "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-006.png", group: "B", stats: { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 } },
+    { id: "desham", name: "DESHAM FC", shortName: "DFC", logo: "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-001.png", group: "A", stats: { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 } },
+    { id: "bellari", name: "BELLARI UNITED", shortName: "BLU", logo: "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-009.png", group: "B", stats: { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 } },
+    { id: "alqadr", name: "AL QADR FC", shortName: "AQF", logo: "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-004.png", group: "A", stats: { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 } },
+    { id: "cuba", name: "FC CUBA", shortName: "FCC", logo: "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-005.png", group: "A", stats: { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 } },
+    { id: "baveria", name: "FC BAVERIA", shortName: "FCB", logo: "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-005.jpg", group: "B", stats: { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 } },
 ];
 
 const SEED_MATCHES = [
     {
-        id: "m1",
-        homeTeamId: "mec",
-        awayTeamId: "civ",
-        date: Timestamp.fromDate(new Date(Date.now() + 86400000)), // Tomorrow
+        id: "m_live_demo",
+        homeTeamId: "FC MALABARIES",
+        awayTeamId: "AETOZ FC",
+        date: Timestamp.fromDate(new Date()), // LIVE NOW
+        status: "LIVE",
+        score: { home: 1, away: 0 },
+        minute: 45,
+        events: []
+    },
+    {
+        id: "m_upcoming_1",
+        homeTeamId: "CLUB DE FUMINGO",
+        awayTeamId: "GUNNERS FC",
+        date: Timestamp.fromDate(new Date(Date.now() + 3600000 * 2)), // In 2 hours
         status: "SCHEDULED",
         score: { home: 0, away: 0 },
         minute: 0,
         events: []
     },
     {
-        id: "m2",
-        homeTeamId: "cs",
-        awayTeamId: "eee",
-        date: Timestamp.fromDate(new Date()), // Today (for testing Live)
+        id: "m_upcoming_2",
+        homeTeamId: "PALLIYANGADI FC",
+        awayTeamId: "DESHAM FC",
+        date: Timestamp.fromDate(new Date(Date.now() + 86400000)), // Tomorrow
         status: "SCHEDULED",
         score: { home: 0, away: 0 },
         minute: 0,

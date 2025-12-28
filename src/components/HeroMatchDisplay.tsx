@@ -1,24 +1,25 @@
 import { useEffect, useState } from "react";
+import { collection, query, orderBy, onSnapshot, Timestamp } from "firebase/firestore";
+import { db } from "../lib/firebase";
 import { mockTeams } from "../mock/teams";
 
-// Helper to get logo
-const getLogo = (name: string) => {
-    const team = mockTeams.find(t => t.title.rendered === name);
-    return team?._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
+// Helper to get logo (fallback to mock if not in DB, but seed uses paths)
+const getLogo = (teamId: string) => {
+    // Check mock first for ease, or use seed paths
+    const team = mockTeams.find(t => t.title.rendered.toLowerCase().includes(teamId.toLowerCase()));
+    if (team) return team._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
+    // Fallback for seeded data which has direct paths like /team-logos/mech-bulls.png
+    return `/team-logos/${teamId}.png`;
 };
 
-// Configurable Match State for Demo
-// Change 'status' to 'UPCOMING' or 'LIVE' to see different states
-const FEATURED_MATCH = {
-    team1: "FC MALABARIES",
-    team2: "AETOZ FC",
-    date: "2025-10-15T16:30:00",
-    venue: "Main Turf",
-    status: "LIVE", // 'UPCOMING' | 'LIVE' 
-    score1: 2,
-    score2: 1,
-    minute: "72"
-};
+interface Match {
+    id: string;
+    homeTeamId: string;
+    awayTeamId: string;
+    status: "SCHEDULED" | "LIVE" | "FINISHED";
+    score: { home: number; away: number };
+    date: Timestamp;
+}
 
 function getTimeLeft(target: Date) {
     const now = new Date();
@@ -34,16 +35,53 @@ function getTimeLeft(target: Date) {
 }
 
 export default function HeroMatchDisplay() {
-    const [timeLeft, setTimeLeft] = useState(getTimeLeft(new Date(FEATURED_MATCH.date)));
+    const [match, setMatch] = useState<Match | null>(null);
+    const [timeLeft, setTimeLeft] = useState<{ days: number, hours: number, minutes: number, seconds: number } | null>(null);
 
     useEffect(() => {
-        const timer = setInterval(() => {
-            setTimeLeft(getTimeLeft(new Date(FEATURED_MATCH.date)));
-        }, 1000);
-        return () => clearInterval(timer);
+        // Priority 1: LIVE matches
+        // Priority 2: Next UPCOMING match
+
+        // Simple strategy: Subscribe to all matches, sort by date, pick best candidate
+        // Ideally: use compound queries, but client-side filter is fine for small dataset
+        const q = query(collection(db, "matches"), orderBy("date", "asc"));
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const matches = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Match));
+
+            // Find first LIVE match
+            let featured = matches.find(m => m.status === 'LIVE');
+
+            // If no live match, find next SCHEDULED match
+            if (!featured) {
+                featured = matches.find(m => m.status === 'SCHEDULED' && m.date.toDate() > new Date());
+            }
+
+            // If still nothing, maybe just the last match? Default to first found for now
+            if (!featured && matches.length > 0) featured = matches[0];
+
+            setMatch(featured || null);
+        });
+
+        return () => unsubscribe();
     }, []);
 
-    const isLive = FEATURED_MATCH.status === 'LIVE';
+    useEffect(() => {
+        if (!match) return;
+
+        const targetDate = match.date.toDate();
+        setTimeLeft(getTimeLeft(targetDate));
+
+        const timer = setInterval(() => {
+            setTimeLeft(getTimeLeft(targetDate));
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [match]);
+
+    if (!match) return null; // Or loading state
+
+    const isLive = match.status === 'LIVE';
 
     return (
         <div className="w-full max-w-4xl mx-auto mt-8 mb-12 animate-fade-in-up animation-delay-200">
@@ -52,7 +90,7 @@ export default function HeroMatchDisplay() {
                 {/* Glow Effect */}
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent blur-sm" />
 
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-12 bg-black/20 rounded-2xl p-6 md:p-8 relative z-10">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-12 bg-black/20 rounded-2xl p-6 md:p-8 relative z-10 transition-all duration-500">
 
                     {/* Status Pill */}
                     <div className="absolute top-4 left-1/2 -translate-x-1/2 md:hidden">
@@ -71,15 +109,16 @@ export default function HeroMatchDisplay() {
                     {/* Team 1 */}
                     <div className="flex-1 flex flex-col items-center gap-4 text-center group cursor-pointer pt-6 md:pt-0">
                         <div className="relative">
-                            <div className="absolute inset-0 bg-yellow-500/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <div className={`absolute inset-0 bg-yellow-500/10 blur-2xl rounded-full transition-opacity duration-500 ${isLive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
                             <img
-                                src={getLogo(FEATURED_MATCH.team1)}
-                                alt={FEATURED_MATCH.team1}
+                                src={getLogo(match.homeTeamId)}
+                                alt={match.homeTeamId} // Use proper name lookup in real app
+                                onError={(e) => e.currentTarget.src = 'https://via.placeholder.com/150?text=LOGO'} // Fallback
                                 className="w-20 h-20 md:w-32 md:h-32 object-contain relative z-10 drop-shadow-[0_0_15px_rgba(0,0,0,0.5)] transform group-hover:scale-110 transition-transform duration-300"
                             />
                         </div>
                         <h3 className="text-lg md:text-2xl font-black text-white uppercase italic tracking-tighter">
-                            {FEATURED_MATCH.team1}
+                            {match.homeTeamId}
                         </h3>
                     </div>
 
@@ -103,15 +142,15 @@ export default function HeroMatchDisplay() {
                             <>
                                 <div className="flex items-center gap-4 mb-2">
                                     <span className="text-5xl md:text-7xl font-mono font-black text-white leading-none tracking-tighter">
-                                        {FEATURED_MATCH.score1}
+                                        {match.score.home}
                                     </span>
                                     <span className="text-zinc-600 text-3xl font-light">-</span>
                                     <span className="text-5xl md:text-7xl font-mono font-black text-white leading-none tracking-tighter">
-                                        {FEATURED_MATCH.score2}
+                                        {match.score.away}
                                     </span>
                                 </div>
                                 <div className="text-green-400 font-mono font-bold text-lg animate-pulse tracking-widest">
-                                    {FEATURED_MATCH.minute}'
+                                    LIVE
                                 </div>
                             </>
                         ) : (
@@ -139,15 +178,16 @@ export default function HeroMatchDisplay() {
                     {/* Team 2 */}
                     <div className="flex-1 flex flex-col items-center gap-4 text-center group cursor-pointer pt-6 md:pt-0">
                         <div className="relative">
-                            <div className="absolute inset-0 bg-yellow-500/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <div className={`absolute inset-0 bg-yellow-500/10 blur-2xl rounded-full transition-opacity duration-500 ${isLive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
                             <img
-                                src={getLogo(FEATURED_MATCH.team2)}
-                                alt={FEATURED_MATCH.team2}
+                                src={getLogo(match.awayTeamId)}
+                                alt={match.awayTeamId}
+                                onError={(e) => e.currentTarget.src = 'https://via.placeholder.com/150?text=LOGO'}
                                 className="w-20 h-20 md:w-32 md:h-32 object-contain relative z-10 drop-shadow-[0_0_15px_rgba(0,0,0,0.5)] transform group-hover:scale-110 transition-transform duration-300"
                             />
                         </div>
                         <h3 className="text-lg md:text-2xl font-black text-white uppercase italic tracking-tighter">
-                            {FEATURED_MATCH.team2}
+                            {match.awayTeamId}
                         </h3>
                     </div>
                 </div>
@@ -155,7 +195,7 @@ export default function HeroMatchDisplay() {
                 {/* Venue Strip */}
                 <div className="bg-black/40 py-2 flex items-center justify-center gap-2 text-[10px] md:text-xs font-medium text-zinc-400 uppercase tracking-[0.2em]">
                     <svg className="w-3 h-3 md:w-4 md:h-4 text-zinc-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" /></svg>
-                    {FEATURED_MATCH.venue} • {new Date(FEATURED_MATCH.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    SOE TURF • {match.date.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </div>
             </div>
         </div>

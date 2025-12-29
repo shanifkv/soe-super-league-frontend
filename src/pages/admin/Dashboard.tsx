@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { collection, onSnapshot, query, orderBy, Timestamp } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy, Timestamp, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import { Link } from "react-router-dom";
 import { seedDatabase } from "../../lib/seed";
@@ -75,20 +75,48 @@ export default function Dashboard() {
                                 </div>
 
                                 {/* Actions */}
-                                <div className="flex items-center gap-4">
-                                    <div className="text-right mr-4">
-                                        <div className="text-xs uppercase text-zinc-500 tracking-wider">Status</div>
-                                        <div className={`font-bold ${match.status === "LIVE" ? "text-red-500" : "text-white"}`}>
-                                            {match.status}
-                                        </div>
+                                <div className="flex flex-col items-end gap-2">
+                                    <div className="flex gap-2 mb-2">
+                                        {/* Quick Actions (Requested by User) - Only for Live Matches */}
+                                        {match.status === 'LIVE' && (
+                                            <>
+                                                <button
+                                                    onClick={() => {
+                                                        const newScore = { ...match.score, home: match.score.home + 1 };
+                                                        updateDoc(doc(db, "matches", match.id), { score: newScore });
+                                                    }}
+                                                    className="px-2 py-1 bg-zinc-800 text-white text-xs rounded hover:bg-zinc-700"
+                                                >
+                                                    +1 Home
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        const newScore = { ...match.score, away: match.score.away + 1 };
+                                                        updateDoc(doc(db, "matches", match.id), { score: newScore });
+                                                    }}
+                                                    className="px-2 py-1 bg-zinc-800 text-white text-xs rounded hover:bg-zinc-700"
+                                                >
+                                                    +1 Away
+                                                </button>
+                                            </>
+                                        )}
                                     </div>
 
-                                    <Link
-                                        to={`/admin/match/${match.id}`}
-                                        className="bg-white text-black font-bold uppercase tracking-wider px-6 py-3 rounded hover:bg-yellow-400 transition-colors"
-                                    >
-                                        {match.status === "LIVE" ? "Manage Live" : "Open Console"}
-                                    </Link>
+                                    <div className="flex items-center gap-4">
+                                        <div className="text-right mr-4">
+                                            <div className="text-xs uppercase text-zinc-500 tracking-wider">Status</div>
+                                            <div className={`font-bold ${match.status === "LIVE" ? "text-red-500" : "text-white"}`}>
+                                                {match.status}
+                                            </div>
+                                        </div>
+
+                                        <Link
+                                            to={`/admin/match/${match.id}`}
+                                            className="bg-white text-black font-bold uppercase tracking-wider px-6 py-3 rounded hover:bg-yellow-400 transition-colors"
+                                        >
+                                            {match.status === "LIVE" ? "Manage Live" : "Open Console"}
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -1,90 +1,102 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { db } from "../lib/firebase";
 import FixtureCard from "../components/FixtureCard";
-import { mockTeams } from "../mock/teams";
 
-// Helper to get logo URL
-const getLogo = (teamName: string) => {
-    const team = mockTeams.find(t => t.title.rendered === teamName);
-    return team?._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
-};
-
-type MatchStatus = 'UPCOMING' | 'LIVE' | 'FINISHED';
+type MatchStatus = 'UPCOMING' | 'LIVE' | 'FINISHED' | 'SCHEDULED';
 
 interface Match {
-    id: number;
-    team1: string;
-    team2: string;
-    date: string;
-    time: string;
+    id: string;
+    homeTeam: { name: string; logo: string };
+    awayTeam: { name: string; logo: string };
+    date: any; // Firestore Timestamp
     venue: string;
-    label?: string;
+    type: string;
     status: MatchStatus;
-    score1?: number;
-    score2?: number;
+    score: { home: number; away: number };
     minute?: string;
 }
 
-// Sample Data Structure
-const SCHEDULE = [
-    {
-        matchday: "Live & Recent",
-        dateGroup: "Today",
-        matches: [
-            { id: 999, team1: "FC MALABARIES", team2: "AETOZ FC", date: "TODAY", time: "NOW", venue: "Main Turf", label: "Pool A", status: "LIVE" as MatchStatus, score1: 2, score2: 1, minute: "72" },
-            { id: 998, team1: "CLUB DE FUMINGO", team2: "GUNNERS FC", date: "YESTERDAY", time: "FT", venue: "Main Turf", label: "Pool A", status: "FINISHED" as MatchStatus, score1: 1, score2: 3 },
-        ]
-    },
-    {
-        matchday: "Matchday 1",
-        dateGroup: "Oct 15 - Oct 17",
-        matches: [
-            { id: 101, team1: "FC MALABARIES", team2: "AETOZ FC", date: "OCT 15", time: "16:30", venue: "Main Turf", label: "Pool A", status: "UPCOMING" as MatchStatus },
-            { id: 102, team1: "CLUB DE FUMINGO", team2: "GUNNERS FC", date: "OCT 16", time: "16:30", venue: "Main Turf", label: "Pool A", status: "UPCOMING" as MatchStatus },
-            { id: 103, team1: "PALLIYANGADI FC", team2: "DESHAM FC", date: "OCT 17", time: "16:30", venue: "Training Ground", label: "Pool A", status: "UPCOMING" as MatchStatus },
-        ]
-    },
-    {
-        matchday: "Matchday 2",
-        dateGroup: "Oct 20 - Oct 22",
-        matches: [
-            { id: 201, team1: "BELLARI UNITED", team2: "AL QADR FC", date: "OCT 20", time: "16:30", venue: "Main Turf", label: "Pool B", status: "UPCOMING" as MatchStatus },
-            { id: 202, team1: "FC CUBA", team2: "FC BAVERIA", date: "OCT 21", time: "16:30", venue: "Main Turf", label: "Pool B", status: "UPCOMING" as MatchStatus },
-            { id: 203, team1: "FC MALABARIES", team2: "CLUB DE FUMINGO", date: "OCT 22", time: "16:30", venue: "Training Ground", label: "Pool A", status: "UPCOMING" as MatchStatus },
-        ]
-    },
-    {
-        matchday: "Matchday 3",
-        dateGroup: "Oct 24 - Oct 26",
-        matches: [
-            { id: 301, team1: "AETOZ FC", team2: "GUNNERS FC", date: "OCT 24", time: "16:30", venue: "Main Turf", label: "Pool A", status: "UPCOMING" as MatchStatus },
-            { id: 302, team1: "PALLIYANGADI FC", team2: "BELLARI UNITED", date: "OCT 24", time: "17:45", venue: "Main Turf", label: "Inter-Pool", status: "UPCOMING" as MatchStatus },
-            { id: 303, team1: "DESHAM FC", team2: "AL QADR FC", date: "OCT 25", time: "16:30", venue: "Training Ground", label: "Pool B", status: "UPCOMING" as MatchStatus },
-            { id: 304, team1: "FC CUBA", team2: "FC MALABARIES", date: "OCT 26", time: "16:30", venue: "Main Turf", label: "Inter-Pool", status: "UPCOMING" as MatchStatus },
-        ]
-    },
-    {
-        matchday: "Semi Finals",
-        dateGroup: "Nov 05",
-        matches: [
-            { id: 401, team1: "TBD", team2: "TBD", date: "NOV 05", time: "16:00", venue: "Main Turf", label: "Semi Final 1", status: "UPCOMING" as MatchStatus },
-            { id: 402, team1: "TBD", team2: "TBD", date: "NOV 05", time: "19:00", venue: "Main Turf", label: "Semi Final 2", status: "UPCOMING" as MatchStatus },
-        ]
-    }
-];
+interface MatchGroup {
+    matchday: string;
+    dateGroup: string;
+    matches: Match[];
+}
 
 export default function Fixtures() {
     const [activeTab, setActiveTab] = useState<'ALL' | 'LIVE' | 'UPCOMING' | 'RESULTS'>('ALL');
+    const [matches, setMatches] = useState<Match[]>([]);
+    const [groupedMatches, setGroupedMatches] = useState<MatchGroup[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const filteredSchedule = SCHEDULE.map(group => {
-        const matches = group.matches.filter(match => {
+    useEffect(() => {
+        const q = query(collection(db, "matches"), orderBy("date", "asc"));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const data = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            })) as Match[];
+            setMatches(data);
+            setLoading(false);
+        });
+        return () => unsubscribe();
+    }, []);
+
+    // Grouping Logic
+    useEffect(() => {
+        // Filter first
+        const filtered = matches.filter(match => {
+            // Map 'SCHEDULED' to 'UPCOMING' for tab logic if needed, or just treat them same
+            const status = match.status === 'SCHEDULED' ? 'UPCOMING' : match.status;
+
             if (activeTab === 'ALL') return true;
-            if (activeTab === 'LIVE') return match.status === 'LIVE';
-            if (activeTab === 'UPCOMING') return match.status === 'UPCOMING';
-            if (activeTab === 'RESULTS') return match.status === 'FINISHED';
+            if (activeTab === 'LIVE') return status === 'LIVE';
+            if (activeTab === 'UPCOMING') return status === 'UPCOMING';
+            if (activeTab === 'RESULTS') return status === 'FINISHED';
             return true;
         });
-        return { ...group, matches };
-    }).filter(group => group.matches.length > 0);
+
+        // Group by Date
+        const groups: Record<string, Match[]> = {};
+
+        filtered.forEach(match => {
+            let dateKey = "Upcoming";
+            if (match.date?.toDate) {
+                dateKey = match.date.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            }
+            if (!groups[dateKey]) groups[dateKey] = [];
+            groups[dateKey].push(match);
+        });
+
+        // Convert to array
+        const result: MatchGroup[] = Object.keys(groups).map(dateKey => ({
+            matchday: getMatchdayLabel(groups[dateKey]),
+            dateGroup: dateKey,
+            matches: groups[dateKey]
+        }));
+
+        setGroupedMatches(result);
+
+    }, [matches, activeTab]);
+
+    const getMatchdayLabel = (matches: Match[]) => {
+        // Simple heuristic for label, could be improved
+        const first = matches[0];
+        if (first?.type) return first.type;
+        return "Matchday";
+    };
+
+    const formatDate = (timestamp: any) => {
+        if (!timestamp?.toDate) return "TBD";
+        return timestamp.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
+    };
+
+    const formatTime = (timestamp: any, status: string) => {
+        if (status === 'LIVE') return "NOW";
+        if (status === 'FINISHED') return "FT";
+        if (!timestamp?.toDate) return "--:--";
+        return timestamp.toDate().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+    };
 
     return (
         <main className="min-h-screen bg-black text-white pt-24 pb-16 px-6">
@@ -119,8 +131,10 @@ export default function Fixtures() {
 
                 {/* Match Schedule */}
                 <div className="space-y-16">
-                    {filteredSchedule.length > 0 ? (
-                        filteredSchedule.map((group, index) => (
+                    {loading ? (
+                        <div className="text-center py-20 animate-pulse">Loading fixtures...</div>
+                    ) : groupedMatches.length > 0 ? (
+                        groupedMatches.map((group, index) => (
                             <div key={index} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
                                 {/* Matchday Header */}
                                 <div className="flex items-center gap-4 mb-8">
@@ -137,17 +151,17 @@ export default function Fixtures() {
                                     {group.matches.map((match: Match) => (
                                         <FixtureCard
                                             key={match.id}
-                                            team1={match.team1}
-                                            team1Logo={getLogo(match.team1)}
-                                            team2={match.team2}
-                                            team2Logo={getLogo(match.team2)}
-                                            date={match.date}
-                                            time={match.time}
+                                            team1={match.homeTeam.name}
+                                            team1Logo={match.homeTeam.logo}
+                                            team2={match.awayTeam.name}
+                                            team2Logo={match.awayTeam.logo}
+                                            date={formatDate(match.date)}
+                                            time={formatTime(match.date, match.status)}
                                             venue={match.venue}
-                                            label={match.label}
-                                            status={match.status}
-                                            score1={match.score1}
-                                            score2={match.score2}
+                                            label={match.type}
+                                            status={match.status === 'SCHEDULED' ? 'UPCOMING' : match.status as any}
+                                            score1={match.score.home}
+                                            score2={match.score.away}
                                             minute={match.minute}
                                         />
                                     ))}

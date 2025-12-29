@@ -9,6 +9,8 @@ import AdminLayout from "./components/admin/AdminLayout";
 import Login from "./pages/admin/Login";
 import Dashboard from "./pages/admin/Dashboard";
 import MatchControl from "./pages/admin/MatchControl";
+import AdminTeams from "./pages/admin/AdminTeams";
+import AdminFixtures from "./pages/admin/AdminFixtures";
 import { Navigate } from "react-router-dom";
 
 // Layout for public pages (with Header)
@@ -41,6 +43,8 @@ export default function App() {
           <Route index element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="match/:id" element={<MatchControl />} />
+          <Route path="teams" element={<AdminTeams />} />
+          <Route path="fixtures" element={<AdminFixtures />} />
         </Route>
       </Routes>
     </AuthProvider>

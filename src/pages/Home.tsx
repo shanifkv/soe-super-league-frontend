@@ -3,6 +3,7 @@ import soeLogo from "../assets/soe-super-league-logo.png";
 import Countdown from "../components/Countdown";
 
 import FixturesSection from "../components/FixturesSection";
+import HeroMatchDisplay from "../components/HeroMatchDisplay";
 
 export default function Home() {
   const [isMuted, setIsMuted] = useState(true);
@@ -99,7 +100,9 @@ export default function Home() {
         </p>
 
         {/* 6. CTA & Countdown Group */}
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-4 w-full">
+          <HeroMatchDisplay />
+
           <a
             href="/fixtures"
             className="text-xs md:text-sm uppercase tracking-widest text-yellow-500 hover:text-white transition-colors border-b-2 border-yellow-500/50 pb-1 hover:border-white font-bold"

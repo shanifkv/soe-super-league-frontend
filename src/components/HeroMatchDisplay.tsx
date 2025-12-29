@@ -39,28 +39,39 @@ export default function HeroMatchDisplay() {
     const [timeLeft, setTimeLeft] = useState<{ days: number, hours: number, minutes: number, seconds: number } | null>(null);
 
     useEffect(() => {
-        // Priority 1: LIVE matches
-        // Priority 2: Next UPCOMING match
-
-        // Simple strategy: Subscribe to all matches, sort by date, pick best candidate
-        // Ideally: use compound queries, but client-side filter is fine for small dataset
-        const q = query(collection(db, "matches"), orderBy("date", "asc"));
+        // SIMPLIFIED QUERY: Fetch all matches, sort in memory to avoid Index/Rule issues
+        const q = query(collection(db, "matches"));
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
-            const matches = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Match));
+            let matches = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Match));
+            console.log("Firestore Updates:", matches);
 
-            // Find first LIVE match
+            // Sort by date manually (Ascending)
+            matches.sort((a, b) => {
+                const dA = a.date?.toDate ? a.date.toDate().getTime() : 0;
+                const dB = b.date?.toDate ? b.date.toDate().getTime() : 0;
+                return dA - dB;
+            });
+
+            // Priority 1: LIVE
             let featured = matches.find(m => m.status === 'LIVE');
 
-            // If no live match, find next SCHEDULED match
+            // Priority 2: Upcoming
             if (!featured) {
-                featured = matches.find(m => m.status === 'SCHEDULED' && m.date.toDate() > new Date());
+                const now = new Date();
+                const upcoming = matches.filter(m => m.status === 'SCHEDULED' && m.date.toDate() > now);
+                featured = upcoming[0];
             }
 
-            // If still nothing, maybe just the last match? Default to first found for now
-            if (!featured && matches.length > 0) featured = matches[0];
+            // Priority 3: Fallback (Newest)
+            if (!featured && matches.length > 0) {
+                matches.sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime());
+                featured = matches[0];
+            }
 
             setMatch(featured || null);
+        }, (error) => {
+            console.error("Firestore Error:", error);
         });
 
         return () => unsubscribe();

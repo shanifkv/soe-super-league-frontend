@@ -152,17 +152,17 @@ export default function Fixtures() {
                                     {group.matches.map((match: Match) => (
                                         <FixtureCard
                                             key={match.id}
-                                            team1={match.homeTeam.name}
-                                            team1Logo={match.homeTeam.logo}
-                                            team2={match.awayTeam.name}
-                                            team2Logo={match.awayTeam.logo}
+                                            team1={match.homeTeam?.name ?? 'TBD'}
+                                            team1Logo={match.homeTeam?.logo ?? ''}
+                                            team2={match.awayTeam?.name ?? 'TBD'}
+                                            team2Logo={match.awayTeam?.logo ?? ''}
                                             date={formatDate(match.date)}
                                             time={formatTime(match.date, match.status)}
                                             venue={match.venue}
                                             label={match.type}
                                             status={match.status === 'SCHEDULED' ? 'UPCOMING' : match.status as any}
-                                            score1={match.score.home}
-                                            score2={match.score.away}
+                                            score1={match.score?.home ?? 0}
+                                            score2={match.score?.away ?? 0}
                                             minute={match.minute}
                                         />
                                     ))}

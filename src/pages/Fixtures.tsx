@@ -61,7 +61,8 @@ export default function Fixtures() {
 
         filtered.forEach(match => {
             let dateKey = "Upcoming";
-            if (match.date?.toDate) {
+            // Safe access to toDate
+            if (match.date && typeof match.date.toDate === 'function') {
                 dateKey = match.date.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
             }
             if (!groups[dateKey]) groups[dateKey] = [];
@@ -87,14 +88,14 @@ export default function Fixtures() {
     };
 
     const formatDate = (timestamp: any) => {
-        if (!timestamp?.toDate) return "TBD";
+        if (!timestamp || typeof timestamp.toDate !== 'function') return "TBD";
         return timestamp.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
     };
 
     const formatTime = (timestamp: any, status: string) => {
         if (status === 'LIVE') return "NOW";
         if (status === 'FINISHED') return "FT";
-        if (!timestamp?.toDate) return "--:--";
+        if (!timestamp || typeof timestamp.toDate !== 'function') return "--:--";
         return timestamp.toDate().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
     };
 

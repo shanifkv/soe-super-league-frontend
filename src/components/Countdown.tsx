@@ -1,17 +1,8 @@
 import { useEffect, useState } from "react";
 
-/**
- * Countdown always targets the NEXT Jan 1
- * No hardcoded year = professional & future-safe
- */
-function getNextJan1() {
-  const now = new Date();
-  const year =
-    now.getMonth() === 0 && now.getDate() === 1
-      ? now.getFullYear()
-      : now.getFullYear() + 1;
-
-  return new Date(`${year}-01-01T09:00:00`);
+// Hardcoded for Jan 1, 2026 as requested
+function getKickoffDate() {
+  return new Date("2026-01-01T00:00:00");
 }
 
 function getTimeLeft(target: Date) {
@@ -29,7 +20,7 @@ function getTimeLeft(target: Date) {
 }
 
 export default function Countdown() {
-  const targetDate = getNextJan1();
+  const targetDate = getKickoffDate();
   const [timeLeft, setTimeLeft] = useState(() =>
     getTimeLeft(targetDate)
   );

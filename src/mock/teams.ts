@@ -7,7 +7,7 @@ export const mockTeams = [
         "_embedded": {
             "wp:featuredmedia": [
                 {
-                    "source_url": "/logo-cuba.jpg"
+                    "source_url": "/logo/logo-cuba.jpg"
                 }
             ]
         }
@@ -59,7 +59,7 @@ export const mockTeams = [
         "_embedded": {
             "wp:featuredmedia": [
                 {
-                    "source_url": "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-003.png"
+                    "source_url": "/logo/gunners-fc.png"
                 }
             ]
         }
@@ -72,7 +72,7 @@ export const mockTeams = [
         "_embedded": {
             "wp:featuredmedia": [
                 {
-                    "source_url": "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-006.png"
+                    "source_url": "/logo/palliyangadi-fc.jpg"
                 }
             ]
         }
@@ -85,7 +85,7 @@ export const mockTeams = [
         "_embedded": {
             "wp:featuredmedia": [
                 {
-                    "source_url": "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-001.png"
+                    "source_url": "/logo/desham-fc.jpg"
                 }
             ]
         }
@@ -98,7 +98,7 @@ export const mockTeams = [
         "_embedded": {
             "wp:featuredmedia": [
                 {
-                    "source_url": "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-009.png"
+                    "source_url": "/logo/bellari-united.png"
                 }
             ]
         }
@@ -124,7 +124,7 @@ export const mockTeams = [
         "_embedded": {
             "wp:featuredmedia": [
                 {
-                    "source_url": "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-005.jpg"
+                    "source_url": "/logo/fc-baveria.jpg"
                 }
             ]
         }

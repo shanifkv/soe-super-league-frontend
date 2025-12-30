@@ -1,4 +1,4 @@
-import { mockTeams } from "../mock/teams";
+import { teams } from "../data/teams";
 
 type TeamId = 48 | 30 | 46 | 42 | 45 | 43 | 41 | 31 | 47 | 44;
 
@@ -14,7 +14,7 @@ interface WebRound {
 
 // Helper to get team details
 const getTeam = (id: number) => {
-    const team = mockTeams.find(t => t.id === id);
+    const team = teams.find(t => t.id === id);
     return {
         name: team?.title.rendered || "Unknown Team",
         logo: team?._embedded?.["wp:featuredmedia"]?.[0]?.source_url || ""

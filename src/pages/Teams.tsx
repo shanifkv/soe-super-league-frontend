@@ -1,27 +1,18 @@
 import { useEffect, useState } from "react";
-import { getTeams } from "../api/sportspress";
-import { mockTeams } from "../mock/teams";
+// import { getTeams } from "../api/sportspress";
+import { teams as staticTeams } from "../data/teams";
 
 import type { Team } from "../types/sportspress";
 
 export default function Teams() {
     const [teams, setTeams] = useState<Team[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    // const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // ✅ DEV MODE: Use Local Snapshot
-        if (import.meta.env.DEV) {
-            setTeams(mockTeams as unknown as Team[]);
-            setLoading(false);
-            return;
-        }
-
-        // ✅ PROD MODE: Real API
-        getTeams()
-            .then(setTeams)
-            .catch(() => setError("Unable to load teams"))
-            .finally(() => setLoading(false));
+        // Use static data as the source of truth for Launch
+        setTeams(staticTeams as unknown as Team[]);
+        setLoading(false);
     }, []);
 
     if (loading) {
@@ -32,13 +23,13 @@ export default function Teams() {
         );
     }
 
-    if (error) {
-        return (
-            <div className="min-h-screen flex items-center justify-center text-red-500">
-                {error}
-            </div>
-        );
-    }
+    // if (error) {
+    //     return (
+    //         <div className="min-h-screen flex items-center justify-center text-red-500">
+    //             {error}
+    //         </div>
+    //     );
+    // }
 
     return (
         <main className="min-h-screen bg-black text-white px-6 py-16">

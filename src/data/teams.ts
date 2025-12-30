@@ -1,4 +1,4 @@
-export const mockTeams = [
+export const teams = [
     {
         "id": 31,
         "title": {

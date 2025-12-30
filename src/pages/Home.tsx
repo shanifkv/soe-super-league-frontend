@@ -12,13 +12,11 @@ export default function Home() {
 
   const toggleAudio = () => {
     const audio = audioRef.current;
-    const video = videoRef.current;
     if (!audio) return;
 
     if (isMuted) {
-      // Unmuting: Start playback explicitly & sync
-      if (video) video.currentTime = 0; // Restart video to sync with audio start
-      audio.volume = 0.5; // Cap volume at 50%
+      // Unmuting: Start playback
+      audio.volume = 1.0;
       audio.muted = false;
       audio.play().then(() => {
         setIsMuted(false);
@@ -33,7 +31,7 @@ export default function Home() {
   };
 
   return (
-    <main className="h-screen bg-black text-white overflow-hidden relative flex flex-col">
+    <main className="min-h-screen bg-black text-white overflow-hidden relative flex flex-col">
       {/* Background Atmosphere */}
       <div className="absolute inset-0 z-0">
         <video
@@ -121,7 +119,7 @@ export default function Home() {
       {/* Audio Control */}
       <button
         onClick={toggleAudio}
-        className="absolute top-24 left-6 z-40 p-2 rounded-full bg-white/5 backdrop-blur-md hover:bg-white/10 transition-all text-white/50 hover:text-white"
+        className="absolute top-6 right-6 z-50 p-3 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all text-white border border-white/10 hover:border-white/30"
         aria-label={isMuted ? "Unmute" : "Mute"}
       >
         {isMuted ? (
@@ -129,7 +127,7 @@ export default function Home() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75 19.5 12m0 0 2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6 4.75-4.75a.75.75 0 0 1 1.286.53v15.88a.75.75 0 0 1-1.286.53L4.5 13.5H2.25a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 1 .75-.75h2.25Z" />
           </svg>
         ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 animate-pulse">
             <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" />
           </svg>
         )}

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { collection, query, orderBy, onSnapshot, Timestamp } from "firebase/firestore";
+import { collection, query, onSnapshot, Timestamp } from "firebase/firestore";
 import { db } from "../lib/firebase";
-import { mockTeams } from "../mock/teams";
+import { teams } from "../data/teams";
 
 // Helper to get logo (fallback to mock if not in DB, but seed uses paths)
 const getLogo = (teamId: string) => {
     // Check mock first for ease, or use seed paths
-    const team = mockTeams.find(t => t.title.rendered.toLowerCase().includes(teamId.toLowerCase()));
+    const team = teams.find(t => t.title.rendered.toLowerCase().includes(teamId.toLowerCase()));
     if (team) return team._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
     // Fallback for seeded data which has direct paths like /team-logos/mech-bulls.png
     return `/team-logos/${teamId}.png`;

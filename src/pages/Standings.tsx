@@ -1,15 +1,15 @@
 import StandingsTable, { type TeamStats } from "../components/StandingsTable";
-import { mockTeams } from "../mock/teams";
+import { teams } from "../data/teams";
 
 // Helper to get logo URL
 const getLogo = (id: number) => {
-    const team = mockTeams.find(t => t.id === id);
+    const team = teams.find(t => t.id === id);
     return team?._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
 };
 
 // Helper to get team name
 const getName = (id: number) => {
-    const team = mockTeams.find(t => t.id === id);
+    const team = teams.find(t => t.id === id);
     return team?.title.rendered || "Team";
 };
 

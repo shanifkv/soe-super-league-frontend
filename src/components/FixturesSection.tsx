@@ -1,9 +1,9 @@
 import FixtureCard from "./FixtureCard";
-import { mockTeams } from "../mock/teams";
+import { teams } from "../data/teams";
 
 // Helper to get logo URL
 const getLogo = (teamName: string) => {
-    const team = mockTeams.find(t => t.title.rendered === teamName);
+    const team = teams.find(t => t.title.rendered === teamName);
     return team?._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
 };
 

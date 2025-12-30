@@ -14,22 +14,22 @@ const getName = (id: number) => {
 };
 
 // Mock Data for Standings
-// Pool A: Teams 48, 47, 46, 45, 44
+// Pool A: Aetoz, Bellari, Fumingo, Baveria, Malabaries
 const POOL_A: TeamStats[] = [
-    { rank: 1, teamName: getName(48), teamLogo: getLogo(48), played: 3, won: 2, drawn: 1, lost: 0, gf: 7, ga: 2, gd: 5, points: 7, form: ['W', 'W', 'D', 'W', 'W'] },
-    { rank: 2, teamName: getName(47), teamLogo: getLogo(47), played: 3, won: 2, drawn: 0, lost: 1, gf: 5, ga: 3, gd: 2, points: 6, form: ['W', 'L', 'W', 'W', 'D'] },
-    { rank: 3, teamName: getName(46), teamLogo: getLogo(46), played: 3, won: 1, drawn: 1, lost: 1, gf: 4, ga: 4, gd: 0, points: 4, form: ['D', 'W', 'L', 'L', 'D'] },
-    { rank: 4, teamName: getName(45), teamLogo: getLogo(45), played: 3, won: 1, drawn: 0, lost: 2, gf: 2, ga: 5, gd: -3, points: 3, form: ['L', 'L', 'W', 'L', 'L'] },
-    { rank: 5, teamName: getName(44), teamLogo: getLogo(44), played: 3, won: 0, drawn: 0, lost: 3, gf: 1, ga: 5, gd: -4, points: 0, form: ['L', 'L', 'L', 'L', 'L'] },
+    { rank: 1, teamName: getName(47), teamLogo: getLogo(47), played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, points: 0, form: [] },
+    { rank: 2, teamName: getName(42), teamLogo: getLogo(42), played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, points: 0, form: [] },
+    { rank: 3, teamName: getName(46), teamLogo: getLogo(46), played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, points: 0, form: [] },
+    { rank: 4, teamName: getName(30), teamLogo: getLogo(30), played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, points: 0, form: [] },
+    { rank: 5, teamName: getName(48), teamLogo: getLogo(48), played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, points: 0, form: [] },
 ];
 
-// Pool B: Teams 43, 42, 41, 31, 30
+// Pool B: Al Qadr, Cuba, Desham, Gunners, Palliyangadi
 const POOL_B: TeamStats[] = [
-    { rank: 1, teamName: getName(43), teamLogo: getLogo(43), played: 3, won: 3, drawn: 0, lost: 0, gf: 9, ga: 1, gd: 8, points: 9, form: ['W', 'W', 'W', 'W', 'W'] },
-    { rank: 2, teamName: getName(42), teamLogo: getLogo(42), played: 3, won: 2, drawn: 0, lost: 1, gf: 6, ga: 4, gd: 2, points: 6, form: ['W', 'W', 'L', 'W', 'D'] },
-    { rank: 3, teamName: getName(41), teamLogo: getLogo(41), played: 3, won: 1, drawn: 1, lost: 1, gf: 3, ga: 3, gd: 0, points: 4, form: ['L', 'D', 'W', 'L', 'D'] },
-    { rank: 4, teamName: getName(31), teamLogo: getLogo(31), played: 3, won: 0, drawn: 1, lost: 2, gf: 2, ga: 6, gd: -4, points: 1, form: ['L', 'L', 'D', 'L', 'L'] },
-    { rank: 5, teamName: getName(30), teamLogo: getLogo(30), played: 3, won: 0, drawn: 0, lost: 3, gf: 0, ga: 6, gd: -6, points: 0, form: ['L', 'L', 'L', 'L', 'L'] },
+    { rank: 1, teamName: getName(41), teamLogo: getLogo(41), played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, points: 0, form: [] },
+    { rank: 2, teamName: getName(31), teamLogo: getLogo(31), played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, points: 0, form: [] },
+    { rank: 3, teamName: getName(43), teamLogo: getLogo(43), played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, points: 0, form: [] },
+    { rank: 4, teamName: getName(45), teamLogo: getLogo(45), played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, points: 0, form: [] },
+    { rank: 5, teamName: getName(44), teamLogo: getLogo(44), played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, points: 0, form: [] },
 ];
 
 export default function Standings() {

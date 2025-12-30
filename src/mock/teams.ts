@@ -1,5 +1,18 @@
 export const mockTeams = [
     {
+        "id": 31,
+        "title": {
+            "rendered": "FC CUBA"
+        },
+        "_embedded": {
+            "wp:featuredmedia": [
+                {
+                    "source_url": "/logo-cuba.jpg"
+                }
+            ]
+        }
+    },
+    {
         "id": 48,
         "title": {
             "rendered": "FC MALABARIES"
@@ -99,19 +112,6 @@ export const mockTeams = [
             "wp:featuredmedia": [
                 {
                     "source_url": "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-004.png"
-                }
-            ]
-        }
-    },
-    {
-        "id": 31,
-        "title": {
-            "rendered": "FC CUBA"
-        },
-        "_embedded": {
-            "wp:featuredmedia": [
-                {
-                    "source_url": "/logo-cuba.jpg"
                 }
             ]
         }

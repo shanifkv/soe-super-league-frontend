@@ -3,6 +3,7 @@ import { db } from "./firebase";
 
 // Real SOE Super League Teams
 const SEED_TEAMS = [
+    { id: "cuba", name: "FC CUBA", shortName: "FCC", logo: "/logo-cuba.jpg", group: "A", stats: { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 } },
     { id: "malabaries", name: "FC MALABARIES", shortName: "FCM", logo: "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-007.png", group: "A", stats: { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 } },
     { id: "aetoz", name: "AETOZ FC", shortName: "ATZ", logo: "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-008.png", group: "A", stats: { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 } },
     { id: "fumingo", name: "CLUB DE FUMINGO", shortName: "CDF", logo: "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-002.png", group: "B", stats: { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 } },
@@ -11,7 +12,6 @@ const SEED_TEAMS = [
     { id: "desham", name: "DESHAM FC", shortName: "DFC", logo: "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-001.png", group: "A", stats: { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 } },
     { id: "bellari", name: "BELLARI UNITED", shortName: "BLU", logo: "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-009.png", group: "B", stats: { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 } },
     { id: "alqadr", name: "AL QADR FC", shortName: "AQF", logo: "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-004.png", group: "A", stats: { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 } },
-    { id: "cuba", name: "FC CUBA", shortName: "FCC", logo: "/logo-cuba.jpg", group: "A", stats: { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 } },
     { id: "baveria", name: "FC BAVERIA", shortName: "FCB", logo: "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-005.jpg", group: "B", stats: { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 } },
 ];
 

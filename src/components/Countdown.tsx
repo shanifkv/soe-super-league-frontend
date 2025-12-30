@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
-// Hardcoded for Jan 1, 2026 as requested
+// Updated to Jan 6, 2026 5:00 PM
 function getKickoffDate() {
-  return new Date("2026-01-01T00:00:00");
+  return new Date("2026-01-06T17:00:00");
 }
 
 function getTimeLeft(target: Date) {

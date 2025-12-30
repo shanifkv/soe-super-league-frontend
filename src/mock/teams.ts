@@ -111,7 +111,7 @@ export const mockTeams = [
         "_embedded": {
             "wp:featuredmedia": [
                 {
-                    "source_url": "https://ssl-sahara.rf.gd/wp-content/uploads/2025/12/team-005.png"
+                    "source_url": "/logo-cuba.jpg"
                 }
             ]
         }

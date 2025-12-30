@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import soeLogo from "../assets/soe-super-league-logo.png";
 import Countdown from "../components/Countdown";
 
-import FixturesSection from "../components/FixturesSection";
+
 
 
 export default function Home() {
@@ -116,10 +116,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Bottom Section: Matchday Strip - Pinned to bottom */}
-      <div className="relative z-30 w-full pb-4">
-        <FixturesSection />
-      </div>
+
 
       {/* Audio Control */}
       <button

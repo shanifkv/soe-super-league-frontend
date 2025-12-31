@@ -112,7 +112,7 @@ export default function Home() {
             <Countdown />
           </div>
 
-          <div className="mt-8 text-[10px] md:text-xs text-zinc-500 font-medium tracking-widest uppercase opacity-60 hover:opacity-100 transition-opacity">
+          <div className="mt-8 text-[8px] md:text-[10px] text-zinc-500 font-medium tracking-[0.2em] uppercase opacity-60 hover:opacity-100 transition-opacity">
             Built by <span className="text-zinc-300">Shanif KV</span>
           </div>
         </div>

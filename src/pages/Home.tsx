@@ -93,7 +93,7 @@ export default function Home() {
         </p>
 
         {/* 5. Description - Compacted */}
-        <p className="hidden md:block text-sm text-zinc-300 max-w-4xl mx-auto mb-4 leading-relaxed font-normal line-clamp-2 drop-shadow">
+        <p className="block text-xs md:text-sm text-zinc-300 max-w-4xl mx-auto mb-4 leading-relaxed font-normal line-clamp-2 drop-shadow px-4">
           The premier inter-department football league of the School of Engineering, Cochin University of Science and Technology (CUSAT).
         </p>
 

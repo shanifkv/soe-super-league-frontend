@@ -4,7 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
 
-const basename = import.meta.env.PROD ? "/app" : "/";
+const basename = "/";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

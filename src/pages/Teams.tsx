@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 // import { getTeams } from "../api/sportspress";
 import { teams as staticTeams } from "../data/teams";
 
@@ -43,9 +44,10 @@ export default function Teams() {
                         team._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
 
                     return (
-                        <div
+                        <Link
                             key={team.id}
-                            className="bg-zinc-900/50 rounded-xl p-6 flex flex-col items-center justify-center border border-zinc-900 hover:border-zinc-700 hover:bg-zinc-900 transition-all group"
+                            to={`/fixtures?team=${team.id}`}
+                            className="bg-zinc-900/50 rounded-xl p-6 flex flex-col items-center justify-center border border-zinc-900 hover:border-zinc-700 hover:bg-zinc-900 transition-all group cursor-pointer block"
                         >
                             <div className="w-24 h-24 md:w-32 md:h-32 mb-6 flex items-center justify-center bg-zinc-800/50 rounded-2xl border border-zinc-800 p-4 shadow-xl group-hover:scale-105 group-hover:shadow-2xl group-hover:border-zinc-700 transition-all duration-300">
                                 {logoSrc ? (
@@ -64,7 +66,7 @@ export default function Teams() {
                             <p className="text-center font-bold text-sm md:text-lg tracking-wide text-zinc-300 group-hover:text-white transition-colors">
                                 {team.title.rendered}
                             </p>
-                        </div>
+                        </Link>
                     );
                 })}
             </div>

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 export interface TeamStats {
     rank: number;
     teamName: string;
+    teamId: number;
     teamLogo?: string;
     played: number;
     won: number;
@@ -56,7 +57,7 @@ export default function StandingsTable({ poolName, teams }: StandingsTableProps)
                                 <tr
                                     key={team.teamName}
                                     className="group border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer"
-                                    onClick={() => navigate("/teams")}
+                                    onClick={() => navigate(`/fixtures?team=${team.teamId}`)}
                                 >
                                     <td className="py-3 px-2 text-center relative">
                                         {isQualifier && (

@@ -167,31 +167,37 @@ export default function Fixtures() {
                                                 </div>
 
                                                 {/* Home Team */}
-                                                <div className={`flex items-center gap-3 flex-1 overflow-hidden transition-opacity ${teamId && !isHome ? "opacity-50" : "opacity-100"}`}>
+                                                <Link
+                                                    to={`/fixtures?team=${match.home}`}
+                                                    className={`flex items-center gap-3 flex-1 overflow-hidden transition-all hover:opacity-80 cursor-pointer ${teamId && !isHome ? "opacity-50" : "opacity-100"}`}
+                                                >
                                                     <img
                                                         src={home.logo}
                                                         alt={home.name}
                                                         className="w-10 h-10 md:w-12 md:h-12 object-contain shrink-0"
                                                     />
-                                                    <span className="font-bold text-zinc-100 text-sm md:text-base leading-tight w-full text-left break-words">
+                                                    <span className="font-bold text-zinc-100 text-sm md:text-base leading-tight w-full text-left break-words group-hover/home:text-white">
                                                         {home.name}
                                                     </span>
-                                                </div>
+                                                </Link>
 
                                                 {/* VS */}
                                                 <div className="px-2 md:px-4 text-zinc-600 font-mono text-xs md:text-sm font-bold shrink-0 mt-2">VS</div>
 
                                                 {/* Away Team */}
-                                                <div className={`flex items-center gap-3 flex-1 justify-end flex-row-reverse text-right overflow-hidden transition-opacity ${teamId && !isAway ? "opacity-50" : "opacity-100"}`}>
+                                                <Link
+                                                    to={`/fixtures?team=${match.away}`}
+                                                    className={`flex items-center gap-3 flex-1 justify-end flex-row-reverse text-right overflow-hidden transition-all hover:opacity-80 cursor-pointer ${teamId && !isAway ? "opacity-50" : "opacity-100"}`}
+                                                >
                                                     <img
                                                         src={away.logo}
                                                         alt={away.name}
                                                         className="w-10 h-10 md:w-12 md:h-12 object-contain shrink-0"
                                                     />
-                                                    <span className="font-bold text-zinc-100 text-sm md:text-base leading-tight w-full text-right break-words">
+                                                    <span className="font-bold text-zinc-100 text-sm md:text-base leading-tight w-full text-right break-words group-hover/away:text-white">
                                                         {away.name}
                                                     </span>
-                                                </div>
+                                                </Link>
                                             </div>
                                         );
                                     })}

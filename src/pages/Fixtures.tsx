@@ -1,4 +1,4 @@
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useLocation } from "react-router-dom";
 import { teams } from "../data/teams";
 
 type TeamId = 48 | 30 | 46 | 42 | 45 | 43 | 41 | 31 | 47 | 44;
@@ -75,10 +75,13 @@ const FIXTURES: WebRound[] = [
 
 export default function Fixtures() {
     const [searchParams] = useSearchParams();
+    const location = useLocation();
     const teamIdParam = searchParams.get("team");
     const teamId = teamIdParam ? Number(teamIdParam) : null;
 
     const selectedTeam = teamId ? getTeam(teamId) : null;
+    const backLink = location.state?.from || "/fixtures";
+    const backLabel = location.state?.from === "/teams" ? "Back to Teams" : location.state?.from === "/standings" ? "Back to Standings" : "Back to all fixtures";
 
     // Filter fixtures based on valid teamId
     const filteredFixtures = FIXTURES.map(round => ({
@@ -109,7 +112,7 @@ export default function Fixtures() {
                                 <span className="font-bold text-white">{selectedTeam.name}</span>
                             </div>
                             <Link
-                                to="/fixtures"
+                                to={backLink}
                                 className="ml-2 p-1 hover:bg-zinc-800 rounded-full text-zinc-400 hover:text-white transition-colors"
                                 title="Clear filter"
                             >
@@ -122,9 +125,9 @@ export default function Fixtures() {
                 {/* Back Button if filtered */}
                 {teamId && (
                     <div className="mb-6 max-w-4xl mx-auto">
-                        <Link to="/fixtures" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm">
+                        <Link to={backLink} className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
-                            Back to all fixtures
+                            {backLabel}
                         </Link>
                     </div>
                 )}

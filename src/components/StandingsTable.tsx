@@ -57,7 +57,7 @@ export default function StandingsTable({ poolName, teams }: StandingsTableProps)
                                 <tr
                                     key={team.teamName}
                                     className="group border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer"
-                                    onClick={() => navigate(`/fixtures?team=${team.teamId}`)}
+                                    onClick={() => navigate(`/fixtures?team=${team.teamId}`, { state: { from: "/standings" } })}
                                 >
                                     <td className="py-3 px-2 text-center relative">
                                         {isQualifier && (

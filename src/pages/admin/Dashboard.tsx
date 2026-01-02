@@ -6,11 +6,14 @@ import { seedDatabase } from "../../lib/seed";
 
 interface Match {
     id: string;
-    homeTeamId: string;
-    awayTeamId: string;
+    homeTeam?: { name: string; logo: string; shortName: string };
+    awayTeam?: { name: string; logo: string; shortName: string };
+    homeTeamId?: string; // Legacy support
+    awayTeamId?: string; // Legacy support
     status: "SCHEDULED" | "LIVE" | "FINISHED";
     score: { home: number; away: number };
     date: Timestamp;
+    round?: string;
 }
 
 export default function Dashboard() {
@@ -54,22 +57,33 @@ export default function Dashboard() {
                             className={`relative overflow-hidden group bg-zinc-900 border ${match.status === "LIVE" ? "border-red-500/50 shadow-red-900/20" : "border-white/10"
                                 } rounded-xl p-6 transition-all hover:bg-zinc-800`}
                         >
-                            {match.status === "LIVE" && (
-                                <div className="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl animate-pulse">
-                                    LIVE
-                                </div>
-                            )}
+                            <div className="absolute top-0 right-0 flex gap-2">
+                                {match.round && (
+                                    <div className="bg-zinc-800 text-zinc-400 text-[10px] font-bold px-3 py-1 rounded-bl-xl border-l border-b border-white/10 uppercase tracking-widest">
+                                        {match.round}
+                                    </div>
+                                )}
+                                {match.status === "LIVE" && (
+                                    <div className="bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl animate-pulse">
+                                        LIVE
+                                    </div>
+                                )}
+                            </div>
 
                             <div className="flex items-center justify-between">
                                 {/* Teams */}
                                 <div className="flex items-center gap-8">
                                     <div className="flex flex-col gap-1">
-                                        <span className="text-2xl font-black uppercase text-white tracking-tight">{match.homeTeamId}</span>
+                                        <span className="text-2xl font-black uppercase text-white tracking-tight text-right md:text-left">
+                                            {match.homeTeam?.name || match.homeTeamId}
+                                        </span>
                                         {match.status !== 'SCHEDULED' && <span className="text-4xl font-mono text-yellow-500">{match.score.home}</span>}
                                     </div>
                                     <span className="text-zinc-500 text-sm font-bold">VS</span>
                                     <div className="flex flex-col gap-1 text-right">
-                                        <span className="text-2xl font-black uppercase text-white tracking-tight">{match.awayTeamId}</span>
+                                        <span className="text-2xl font-black uppercase text-white tracking-tight">
+                                            {match.awayTeam?.name || match.awayTeamId}
+                                        </span>
                                         {match.status !== 'SCHEDULED' && <span className="text-4xl font-mono text-yellow-500">{match.score.away}</span>}
                                     </div>
                                 </div>

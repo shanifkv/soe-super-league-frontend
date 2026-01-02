@@ -21,6 +21,12 @@ service cloud.firestore {
       allow write: if isAuthenticated();
     }
 
+    // MANAGERS: Public Read, Admin Write
+    match /managers/{managerId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
     // Default: Deny everything else unless explicitly allowed
     match /{document=**} {
       allow read, write: if false;

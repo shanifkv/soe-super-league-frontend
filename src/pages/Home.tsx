@@ -1,14 +1,29 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import soeLogo from "../assets/soe-super-league-logo.png";
 import Countdown from "../components/Countdown";
-
-
-
+import MatchCenter, { type Match } from "../components/MatchCenter";
+import { subscribeToMatches } from "../lib/adminService";
 
 export default function Home() {
   const [isMuted, setIsMuted] = useState(true);
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [hasActivity, setHasActivity] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   const audioRef = useRef<HTMLAudioElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    // Fetch matches to determine if we should show the Match Center
+    const unsubscribe = subscribeToMatches((data) => {
+      setMatches(data as Match[]);
+      // Show Match Center if any match is LIVE or FINISHED
+      const active = data.some((m: any) => m.status === 'LIVE' || m.status === 'FINISHED');
+      setHasActivity(active);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const toggleAudio = () => {
     const audio = audioRef.current;
@@ -97,28 +112,36 @@ export default function Home() {
           The premier inter-department football league of the School of Engineering, Cochin University of Science and Technology (CUSAT).
         </p>
 
-        {/* 6. CTA & Countdown Group */}
+        {/* 6. CTA & Dynamic Content Group */}
         <div className="flex flex-col items-center gap-4 w-full">
 
+          {loading ? (
+            // Loading State (Invisible placeholder)
+            <div className="h-32 w-full"></div>
+          ) : hasActivity ? (
+            // MATCH CENTER (Live/Results/Upcoming)
+            <MatchCenter matches={matches} />
+          ) : (
+            // PRE-SEASON COUNTDOWN
+            <>
+              <a
+                href="/fixtures"
+                className="text-xs md:text-sm uppercase tracking-widest text-yellow-500 hover:text-white transition-colors border-b-2 border-yellow-500/50 pb-1 hover:border-white font-bold"
+              >
+                View Full Fixtures →
+              </a>
 
-          <a
-            href="/fixtures"
-            className="text-xs md:text-sm uppercase tracking-widest text-yellow-500 hover:text-white transition-colors border-b-2 border-yellow-500/50 pb-1 hover:border-white font-bold"
-          >
-            View Full Fixtures →
-          </a>
-
-          <div className="scale-75 origin-top">
-            <Countdown />
-          </div>
+              <div className="scale-75 origin-top">
+                <Countdown />
+              </div>
+            </>
+          )}
 
           <div className="mt-8 text-[8px] md:text-[10px] text-zinc-500 font-medium tracking-[0.2em] uppercase opacity-60 hover:opacity-100 transition-opacity">
             Built by <span className="text-zinc-300">Shanif KV</span>
           </div>
         </div>
       </div>
-
-
 
       {/* Audio Control */}
       <button

@@ -1,38 +1,33 @@
+import { useEffect, useState } from "react";
 import StandingsTable, { type TeamStats } from "../components/StandingsTable";
-import { teams } from "../data/teams";
-
-// Helper to get logo URL
-const getLogo = (id: number) => {
-    const team = teams.find(t => t.id === id);
-    return team?._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
-};
-
-// Helper to get team name
-const getName = (id: number) => {
-    const team = teams.find(t => t.id === id);
-    return team?.title.rendered || "Team";
-};
-
-// Mock Data for Standings
-// Pool A: Aetoz, Bellari, Fumingo, Baveria, Malabaries
-const POOL_A: TeamStats[] = [
-    { rank: 1, teamName: getName(47), teamId: 47, teamLogo: getLogo(47), played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, points: 0, form: [] },
-    { rank: 2, teamName: getName(42), teamId: 42, teamLogo: getLogo(42), played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, points: 0, form: [] },
-    { rank: 3, teamName: getName(46), teamId: 46, teamLogo: getLogo(46), played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, points: 0, form: [] },
-    { rank: 4, teamName: getName(30), teamId: 30, teamLogo: getLogo(30), played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, points: 0, form: [] },
-    { rank: 5, teamName: getName(48), teamId: 48, teamLogo: getLogo(48), played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, points: 0, form: [] },
-];
-
-// Pool B: Al Qadr, Cuba, Desham, Gunners, Palliyangadi
-const POOL_B: TeamStats[] = [
-    { rank: 1, teamName: getName(41), teamId: 41, teamLogo: getLogo(41), played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, points: 0, form: [] },
-    { rank: 2, teamName: getName(31), teamId: 31, teamLogo: getLogo(31), played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, points: 0, form: [] },
-    { rank: 3, teamName: getName(43), teamId: 43, teamLogo: getLogo(43), played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, points: 0, form: [] },
-    { rank: 4, teamName: getName(45), teamId: 45, teamLogo: getLogo(45), played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, points: 0, form: [] },
-    { rank: 5, teamName: getName(44), teamId: 44, teamLogo: getLogo(44), played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, points: 0, form: [] },
-];
+import { subscribeToMatches } from "../lib/adminService";
+import { calculateStandings } from "../lib/standingsUtils";
 
 export default function Standings() {
+    const [standings, setStandings] = useState<{ "Pool A": TeamStats[], "Pool B": TeamStats[] }>({
+        "Pool A": [],
+        "Pool B": []
+    });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const unsubscribe = subscribeToMatches((matches) => {
+            const calculated = calculateStandings(matches);
+            setStandings(calculated);
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <div className="text-zinc-500 animate-pulse">Updating League Table...</div>
+            </div>
+        );
+    }
+
     return (
         <main className="min-h-screen bg-black text-white pt-24 pb-16 px-6">
             <div className="max-w-7xl mx-auto">
@@ -48,8 +43,8 @@ export default function Standings() {
 
                 {/* Pools Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
-                    <StandingsTable poolName="Pool A" teams={POOL_A} />
-                    <StandingsTable poolName="Pool B" teams={POOL_B} />
+                    <StandingsTable poolName="Pool A" teams={standings["Pool A"]} />
+                    <StandingsTable poolName="Pool B" teams={standings["Pool B"]} />
                 </div>
             </div>
         </main>

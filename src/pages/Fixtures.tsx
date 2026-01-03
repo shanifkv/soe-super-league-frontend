@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams, useLocation } from "react-router-dom";
-import { MATCHES } from "../data/fixtures";
+import { subscribeToMatches } from "../lib/adminService";
+// import { MATCHES } from "../data/fixtures"; // Removed static import
 
 interface Team {
     id: string;
     name: string;
     logo: string;
     shortName: string;
+    pool?: string;
 }
 
 interface Match {
@@ -38,11 +40,11 @@ export default function Fixtures() {
     const backLabel = location.state?.from === "/teams" ? "Back to Teams" : location.state?.from === "/standings" ? "Back to Standings" : "Back to all fixtures";
 
     useEffect(() => {
-        // Process Static Data
-        const loadData = () => {
+        // Subscribe to Real-time Data
+        const unsubscribe = subscribeToMatches((data) => {
             const groupedArgs: Record<string, Match[]> = {};
 
-            MATCHES.forEach(match => {
+            data.forEach(match => {
                 const roundTitle = match.round;
                 if (!groupedArgs[roundTitle]) groupedArgs[roundTitle] = [];
                 groupedArgs[roundTitle].push(match);
@@ -60,9 +62,9 @@ export default function Fixtures() {
 
             setRounds(roundsArray);
             setLoading(false);
-        };
+        });
 
-        loadData();
+        return () => unsubscribe();
     }, []);
 
     // Effect to find selected team details from loaded matches
@@ -176,7 +178,7 @@ export default function Fixtures() {
                                         return (
                                             <div
                                                 key={match.id}
-                                                className={`relative border rounded-xl p-4 md:p-6 flex justify-between items-center transition-all group
+                                                className={`relative border rounded-xl p-3 md:p-6 flex justify-between items-center transition-all group
                                                     ${teamIdParam && (isHome || isAway)
                                                         ? "bg-zinc-900 border-yellow-500/30 shadow-[0_0_15px_rgba(234,179,8,0.1)]"
                                                         : "bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800"
@@ -186,46 +188,53 @@ export default function Fixtures() {
                                                 {/* Home Team */}
                                                 <Link
                                                     to={`/fixtures?team=${home.id}`}
-                                                    className={`flex items-center gap-3 flex-1 overflow-hidden transition-all hover:opacity-80 cursor-pointer ${teamIdParam && !isHome ? "opacity-50" : "opacity-100"}`}
+                                                    className={`flex items-center gap-2 md:gap-3 flex-1 overflow-hidden transition-all hover:opacity-80 cursor-pointer ${teamIdParam && !isHome ? "opacity-50" : "opacity-100"}`}
                                                 >
                                                     <img
                                                         src={home.logo}
                                                         alt={home.name}
-                                                        className="w-10 h-10 md:w-12 md:h-12 object-contain shrink-0"
+                                                        className="w-8 h-8 md:w-12 md:h-12 object-contain shrink-0"
                                                     />
-                                                    <span className="font-bold text-zinc-100 text-sm md:text-base leading-tight w-full text-left break-words group-hover/home:text-white">
+                                                    <span className="font-bold text-zinc-100 text-xs md:text-base leading-tight w-full text-left uppercase tracking-tight group-hover/home:text-white">
                                                         {home.name}
                                                     </span>
                                                 </Link>
 
                                                 {/* VS, Score, or Time */}
-                                                <div className="px-2 md:px-4 flex flex-col items-center justify-center shrink-0 mt-2 min-w-[80px]">
+                                                <div className="px-1 md:px-4 flex flex-col items-center justify-center shrink-0 min-w-[60px] md:min-w-[80px]">
+                                                    {/* Pool Badge */}
+                                                    {home.pool && (
+                                                        <span className="text-[8px] md:text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1 md:mb-2 bg-zinc-800/50 px-1.5 py-0.5 rounded border border-zinc-700/50">
+                                                            Pool {home.pool}
+                                                        </span>
+                                                    )}
+
                                                     {match.status === "LIVE" || match.status === "FINISHED" ? (
-                                                        <div className="flex gap-2 font-mono text-xl font-bold text-yellow-500">
+                                                        <div className="flex gap-1 md:gap-2 font-mono text-lg md:text-xl font-bold text-yellow-500">
                                                             <span>{match.score.home}</span>
                                                             <span className="text-zinc-600">-</span>
                                                             <span>{match.score.away}</span>
                                                         </div>
                                                     ) : (
                                                         <div className="flex flex-col items-center text-zinc-500">
-                                                            <span className="font-mono text-xs md:text-sm font-bold text-zinc-300">{timeString}</span>
-                                                            <span className="text-[10px] text-zinc-600 uppercase">{dateString}</span>
+                                                            <span className="font-mono text-[10px] md:text-sm font-bold text-zinc-300 whitespace-nowrap">{timeString}</span>
+                                                            <span className="text-[8px] md:text-[10px] text-zinc-600 uppercase whitespace-nowrap">{dateString}</span>
                                                         </div>
                                                     )}
-                                                    {match.status === "LIVE" && <span className="text-[10px] text-red-500 font-bold animate-pulse mt-1">LIVE</span>}
+                                                    {match.status === "LIVE" && <span className="text-[9px] text-red-500 font-bold animate-pulse mt-0.5">LIVE</span>}
                                                 </div>
 
                                                 {/* Away Team */}
                                                 <Link
                                                     to={`/fixtures?team=${away.id}`}
-                                                    className={`flex items-center gap-3 flex-1 justify-end flex-row-reverse text-right overflow-hidden transition-all hover:opacity-80 cursor-pointer ${teamIdParam && !isAway ? "opacity-50" : "opacity-100"}`}
+                                                    className={`flex items-center gap-2 md:gap-3 flex-1 justify-end flex-row-reverse text-right overflow-hidden transition-all hover:opacity-80 cursor-pointer ${teamIdParam && !isAway ? "opacity-50" : "opacity-100"}`}
                                                 >
                                                     <img
                                                         src={away.logo}
                                                         alt={away.name}
-                                                        className="w-10 h-10 md:w-12 md:h-12 object-contain shrink-0"
+                                                        className="w-8 h-8 md:w-12 md:h-12 object-contain shrink-0"
                                                     />
-                                                    <span className="font-bold text-zinc-100 text-sm md:text-base leading-tight w-full text-right break-words group-hover/away:text-white">
+                                                    <span className="font-bold text-zinc-100 text-xs md:text-base leading-tight w-full text-right uppercase tracking-tight group-hover/away:text-white">
                                                         {away.name}
                                                     </span>
                                                 </Link>

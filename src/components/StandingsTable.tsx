@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 export interface TeamStats {
     rank: number;
     teamName: string;
-    teamId: number;
+    teamId: number | string;
     teamLogo?: string;
     played: number;
     won: number;
@@ -13,7 +13,7 @@ export interface TeamStats {
     ga: number;
     gd: number;
     points: number;
-    form: ('W' | 'D' | 'L')[];
+    form: string[];
 }
 
 interface StandingsTableProps {
@@ -37,18 +37,18 @@ export default function StandingsTable({ poolName, teams }: StandingsTableProps)
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="text-[10px] md:text-xs text-zinc-500 uppercase tracking-widest border-b border-white/10">
-                            <th className="py-3 px-2 font-bold text-center w-10">Pos</th>
-                            <th className="py-3 px-2 font-bold min-w-[150px]">Club</th>
-                            <th className="py-3 px-2 font-bold text-center">Pl</th>
-                            <th className="py-3 px-2 font-bold text-center">W</th>
-                            <th className="py-3 px-2 font-bold text-center">D</th>
-                            <th className="py-3 px-2 font-bold text-center">L</th>
-                            <th className="py-3 px-2 font-bold text-center hidden md:table-cell">GD</th>
-                            <th className="py-3 px-2 font-bold text-center">Pts</th>
-                            <th className="py-3 px-2 font-bold text-center hidden lg:table-cell">Form</th>
+                            <th className="py-3 px-1 md:px-2 font-bold text-center w-8 md:w-10">Pos</th>
+                            <th className="py-3 px-1 md:px-2 font-bold min-w-[100px] md:min-w-[150px]">Club</th>
+                            <th className="py-3 px-1 md:px-2 font-bold text-center">Pl</th>
+                            <th className="py-3 px-1 md:px-2 font-bold text-center">W</th>
+                            <th className="py-3 px-1 md:px-2 font-bold text-center">D</th>
+                            <th className="py-3 px-1 md:px-2 font-bold text-center">L</th>
+                            <th className="py-3 px-1 md:px-2 font-bold text-center hidden md:table-cell">GD</th>
+                            <th className="py-3 px-1 md:px-2 font-bold text-center">Pts</th>
+                            <th className="py-3 px-1 md:px-2 font-bold text-center">Form</th>
                         </tr>
                     </thead>
-                    <tbody className="text-sm font-medium">
+                    <tbody className="text-xs md:text-sm font-medium">
                         {teams.map((team, index) => {
                             // Top 2 Qualify
                             const isQualifier = index < 2;
@@ -59,41 +59,41 @@ export default function StandingsTable({ poolName, teams }: StandingsTableProps)
                                     className="group border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer"
                                     onClick={() => navigate(`/fixtures?team=${team.teamId}`, { state: { from: "/standings" } })}
                                 >
-                                    <td className="py-3 px-2 text-center relative">
+                                    <td className="py-2 md:py-3 px-1 md:px-2 text-center relative">
                                         {isQualifier && (
-                                            <div className="absolute left-0 top-3 bottom-3 w-[3px] bg-yellow-500 rounded-r-full" />
+                                            <div className="absolute left-0 top-3 bottom-3 w-[2px] md:w-[3px] bg-yellow-500 rounded-r-full" />
                                         )}
                                         <span className="text-zinc-400 group-hover:text-white transition-colors">{team.rank}</span>
                                     </td>
-                                    <td className="py-3 px-2">
-                                        <div className="flex items-center gap-3">
+                                    <td className="py-2 md:py-3 px-1 md:px-2">
+                                        <div className="flex items-center gap-2 md:gap-3">
                                             {team.teamLogo ? (
-                                                <img src={team.teamLogo} alt={team.teamName} className="w-6 h-6 md:w-8 md:h-8 object-contain" />
+                                                <img src={team.teamLogo} alt={team.teamName} className="w-5 h-5 md:w-8 md:h-8 object-contain" />
                                             ) : (
-                                                <div className="w-6 h-6 md:w-8 md:h-8 bg-zinc-800 rounded-full" />
+                                                <div className="w-5 h-5 md:w-8 md:h-8 bg-zinc-800 rounded-full" />
                                             )}
-                                            <span className={`text-sm md:text-base font-bold ${isQualifier ? 'text-white' : 'text-zinc-300'} group-hover:text-white`}>
+                                            <span className={`text-xs md:text-base font-bold ${isQualifier ? 'text-white' : 'text-zinc-300'} group-hover:text-white`}>
                                                 {team.teamName}
                                             </span>
                                         </div>
                                     </td>
-                                    <td className="py-3 px-2 text-center text-zinc-300">{team.played}</td>
-                                    <td className="py-3 px-2 text-center text-zinc-300">{team.won}</td>
-                                    <td className="py-3 px-2 text-center text-zinc-300">{team.drawn}</td>
-                                    <td className="py-3 px-2 text-center text-zinc-300">{team.lost}</td>
-                                    <td className="py-3 px-2 text-center text-zinc-300 hidden md:table-cell">
+                                    <td className="py-2 md:py-3 px-1 md:px-2 text-center text-zinc-300">{team.played}</td>
+                                    <td className="py-2 md:py-3 px-1 md:px-2 text-center text-zinc-300">{team.won}</td>
+                                    <td className="py-2 md:py-3 px-1 md:px-2 text-center text-zinc-300">{team.drawn}</td>
+                                    <td className="py-2 md:py-3 px-1 md:px-2 text-center text-zinc-300">{team.lost}</td>
+                                    <td className="py-2 md:py-3 px-1 md:px-2 text-center text-zinc-300 hidden md:table-cell">
                                         {team.gd > 0 ? `+${team.gd}` : team.gd}
                                     </td>
-                                    <td className="py-3 px-2 text-center font-black text-white text-base md:text-lg">
+                                    <td className="py-2 md:py-3 px-1 md:px-2 text-center font-black text-white text-sm md:text-lg">
                                         {team.points}
                                     </td>
-                                    <td className="py-3 px-2 hidden lg:table-cell">
-                                        <div className="flex items-center justify-center gap-1">
+                                    <td className="py-2 md:py-3 px-1 md:px-2">
+                                        <div className="flex items-center justify-center gap-[1px] md:gap-1">
                                             {team.form.map((result, i) => (
                                                 <span
                                                     key={i}
                                                     className={`
-                                                        w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold text-white
+                                                        w-4 h-4 md:w-6 md:h-6 flex items-center justify-center rounded text-[8px] md:text-[10px] font-bold text-white
                                                         ${result === 'W' ? 'bg-green-600' : result === 'D' ? 'bg-zinc-500' : 'bg-red-600'}
                                                     `}
                                                 >

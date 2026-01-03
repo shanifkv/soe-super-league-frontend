@@ -1,44 +1,9 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../lib/firebase";
-
-interface Team {
-    id: string;
-    name: string;
-    logo: string;
-    shortName: string;
-    // Add other fields if needed for display, currently mapped to match display needs
-}
+import { TEAMS } from "../data/fixtures";
 
 export default function Teams() {
-    const [teams, setTeams] = useState<Team[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        // Subscribe to teams collection
-        // Assuming we want them ordered by name or id, adding simple order by Name if possible, 
-        // but given IDs are alphanumeric, simple collection fetch is fine.
-        const q = collection(db, "teams");
-
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Team));
-            // Optional: Sort alphabetically by name
-            data.sort((a, b) => a.name.localeCompare(b.name));
-            setTeams(data);
-            setLoading(false);
-        });
-
-        return () => unsubscribe();
-    }, []);
-
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-black flex items-center justify-center text-zinc-400 animate-pulse">
-                Loading teams…
-            </div>
-        );
-    }
+    // Sort teams alphabetically
+    const teams = [...TEAMS].sort((a, b) => a.name.localeCompare(b.name));
 
     return (
         <main className="min-h-screen bg-black text-white px-6 py-16">
@@ -60,6 +25,7 @@ export default function Teams() {
                                     src={team.logo}
                                     alt={team.name}
                                     className="w-full h-full object-contain drop-shadow-md"
+                                    loading="lazy"
                                 />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-zinc-700 text-4xl">

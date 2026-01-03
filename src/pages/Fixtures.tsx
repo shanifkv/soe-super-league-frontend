@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams, useLocation } from "react-router-dom";
-import { collection, onSnapshot, query, orderBy, Timestamp } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { MATCHES } from "../data/fixtures";
 
 interface Team {
     id: string;
@@ -12,14 +11,12 @@ interface Team {
 
 interface Match {
     id: string;
-    homeTeam?: Team;
-    awayTeam?: Team;
-    homeTeamId: string;
-    awayTeamId: string;
+    homeTeam: Team;
+    awayTeam: Team;
     status: "SCHEDULED" | "LIVE" | "FINISHED";
     score: { home: number; away: number };
-    date: Timestamp;
-    round?: string;
+    date: string; // Changed from Timestamp to string (ISO)
+    round: string;
 }
 
 interface WebRound {
@@ -41,21 +38,17 @@ export default function Fixtures() {
     const backLabel = location.state?.from === "/teams" ? "Back to Teams" : location.state?.from === "/standings" ? "Back to Standings" : "Back to all fixtures";
 
     useEffect(() => {
-        // Subscribe to matches
-        const q = query(collection(db, "matches"), orderBy("date", "asc"));
-
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const matches = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Match));
-
-            // Group by Round
+        // Process Static Data
+        const loadData = () => {
             const groupedArgs: Record<string, Match[]> = {};
-            matches.forEach(match => {
-                const roundTitle = match.round || "Unscheduled";
+
+            MATCHES.forEach(match => {
+                const roundTitle = match.round;
                 if (!groupedArgs[roundTitle]) groupedArgs[roundTitle] = [];
                 groupedArgs[roundTitle].push(match);
             });
 
-            // Convert to array and sort by round number (assuming "Round X" format)
+            // Convert to array and sort by round number
             const roundsArray = Object.entries(groupedArgs).map(([title, matches]) => ({
                 title,
                 matches
@@ -67,12 +60,12 @@ export default function Fixtures() {
 
             setRounds(roundsArray);
             setLoading(false);
-        });
+        };
 
-        return () => unsubscribe();
+        loadData();
     }, []);
 
-    // Effect to find selected team details from loaded matches (since we don't have a direct team cache here yet)
+    // Effect to find selected team details from loaded matches
     useEffect(() => {
         if (!teamIdParam || rounds.length === 0) {
             setTeamDetails(null);
@@ -82,11 +75,11 @@ export default function Fixtures() {
         // Search for the team in the loaded matches
         for (const round of rounds) {
             for (const match of round.matches) {
-                if (match.homeTeam?.id === teamIdParam) {
+                if (match.homeTeam.id === teamIdParam) {
                     setTeamDetails(match.homeTeam);
                     return;
                 }
-                if (match.awayTeam?.id === teamIdParam) {
+                if (match.awayTeam.id === teamIdParam) {
                     setTeamDetails(match.awayTeam);
                     return;
                 }
@@ -99,8 +92,8 @@ export default function Fixtures() {
         ...round,
         matches: round.matches.filter(match =>
             !teamIdParam ||
-            match.homeTeam?.id === teamIdParam ||
-            match.awayTeam?.id === teamIdParam
+            match.homeTeam.id === teamIdParam ||
+            match.awayTeam.id === teamIdParam
         )
     })).filter(round => round.matches.length > 0);
 
@@ -172,12 +165,13 @@ export default function Fixtures() {
                                     {round.matches.map((match) => {
                                         const home = match.homeTeam;
                                         const away = match.awayTeam;
-
-                                        // Fallback if data is missing
-                                        if (!home || !away) return null;
-
                                         const isHome = home.id === teamIdParam;
                                         const isAway = away.id === teamIdParam;
+
+                                        // Format Date Display
+                                        const matchDate = new Date(match.date);
+                                        const timeString = matchDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+                                        const dateString = matchDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
 
                                         return (
                                             <div
@@ -189,11 +183,6 @@ export default function Fixtures() {
                                                     }
                                                 `}
                                             >
-                                                {/* Pool Label - TODO: Add Pool to Team Object if needed, for now logic based on ID is removed or needs DB support */}
-                                                {/* <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-800 text-zinc-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-zinc-700 uppercase tracking-wider">
-                                                    Pool A
-                                                </div> */}
-
                                                 {/* Home Team */}
                                                 <Link
                                                     to={`/fixtures?team=${home.id}`}
@@ -209,8 +198,8 @@ export default function Fixtures() {
                                                     </span>
                                                 </Link>
 
-                                                {/* VS or Score */}
-                                                <div className="px-2 md:px-4 flex flex-col items-center justify-center shrink-0 mt-2">
+                                                {/* VS, Score, or Time */}
+                                                <div className="px-2 md:px-4 flex flex-col items-center justify-center shrink-0 mt-2 min-w-[80px]">
                                                     {match.status === "LIVE" || match.status === "FINISHED" ? (
                                                         <div className="flex gap-2 font-mono text-xl font-bold text-yellow-500">
                                                             <span>{match.score.home}</span>
@@ -218,9 +207,12 @@ export default function Fixtures() {
                                                             <span>{match.score.away}</span>
                                                         </div>
                                                     ) : (
-                                                        <span className="text-zinc-600 font-mono text-xs md:text-sm font-bold">VS</span>
+                                                        <div className="flex flex-col items-center text-zinc-500">
+                                                            <span className="font-mono text-xs md:text-sm font-bold text-zinc-300">{timeString}</span>
+                                                            <span className="text-[10px] text-zinc-600 uppercase">{dateString}</span>
+                                                        </div>
                                                     )}
-                                                    {match.status === "LIVE" && <span className="text-[10px] text-red-500 font-bold animate-pulse">LIVE</span>}
+                                                    {match.status === "LIVE" && <span className="text-[10px] text-red-500 font-bold animate-pulse mt-1">LIVE</span>}
                                                 </div>
 
                                                 {/* Away Team */}

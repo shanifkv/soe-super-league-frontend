@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { collection, query, onSnapshot, Timestamp } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { subscribeToMatches } from "../lib/adminService";
 import { teams } from "../data/teams";
 
 // Helper to get logo (fallback to mock if not in DB, but seed uses paths)
@@ -18,7 +17,7 @@ interface Match {
     awayTeamId: string;
     status: "SCHEDULED" | "LIVE" | "FINISHED";
     score: { home: number; away: number };
-    date: Timestamp;
+    date: string;
 }
 
 function getTimeLeft(target: Date) {
@@ -39,40 +38,32 @@ export default function HeroMatchDisplay() {
     const [timeLeft, setTimeLeft] = useState<{ days: number, hours: number, minutes: number, seconds: number } | null>(null);
 
     useEffect(() => {
-        // SIMPLIFIED QUERY: Fetch all matches, sort in memory to avoid Index/Rule issues
-        const q = query(collection(db, "matches"));
+        const unsubscribe = subscribeToMatches(
+            (matches) => {
+                console.log("Hero Updates:", matches);
 
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            let matches = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Match));
-            console.log("Firestore Updates:", matches);
+                // Priority 1: LIVE
+                let featured = matches.find(m => m.status === 'LIVE');
 
-            // Sort by date manually (Ascending)
-            matches.sort((a, b) => {
-                const dA = a.date?.toDate ? a.date.toDate().getTime() : 0;
-                const dB = b.date?.toDate ? b.date.toDate().getTime() : 0;
-                return dA - dB;
-            });
+                // Priority 2: Upcoming
+                if (!featured) {
+                    const now = new Date();
+                    const upcoming = matches.filter(m => m.status === 'SCHEDULED' && new Date(m.date) > now);
+                    featured = upcoming[0];
+                }
 
-            // Priority 1: LIVE
-            let featured = matches.find(m => m.status === 'LIVE');
+                // Priority 3: Fallback (Newest)
+                if (!featured && matches.length > 0) {
+                    // Start from end (newest) since matches are sorted ascending
+                    featured = matches[matches.length - 1];
+                }
 
-            // Priority 2: Upcoming
-            if (!featured) {
-                const now = new Date();
-                const upcoming = matches.filter(m => m.status === 'SCHEDULED' && m.date.toDate() > now);
-                featured = upcoming[0];
+                setMatch(featured || null);
+            },
+            (error) => {
+                console.error("Hero Subscription Error:", error);
             }
-
-            // Priority 3: Fallback (Newest)
-            if (!featured && matches.length > 0) {
-                matches.sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime());
-                featured = matches[0];
-            }
-
-            setMatch(featured || null);
-        }, (error) => {
-            console.error("Firestore Error:", error);
-        });
+        );
 
         return () => unsubscribe();
     }, []);
@@ -80,7 +71,7 @@ export default function HeroMatchDisplay() {
     useEffect(() => {
         if (!match) return;
 
-        const targetDate = match.date.toDate();
+        const targetDate = new Date(match.date);
         setTimeLeft(getTimeLeft(targetDate));
 
         const timer = setInterval(() => {
@@ -206,7 +197,7 @@ export default function HeroMatchDisplay() {
                 {/* Venue Strip */}
                 <div className="bg-black/40 py-2 flex items-center justify-center gap-2 text-[10px] md:text-xs font-medium text-zinc-400 uppercase tracking-[0.2em]">
                     <svg className="w-3 h-3 md:w-4 md:h-4 text-zinc-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" /></svg>
-                    SOE TURF • {match.date.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    SOE TURF • {new Date(match.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </div>
             </div>
         </div>

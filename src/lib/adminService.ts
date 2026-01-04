@@ -1,38 +1,39 @@
 
-import { collection, doc, updateDoc, onSnapshot, query, getDocs, writeBatch, getDocsFromServer } from "firebase/firestore";
-import { db } from "./firebase";
+import { supabase } from "./supabase";
 import { TEAMS, MATCHES } from "../data/fixtures";
+import { managers } from "../data/Managers/manager";
 
 export const COLLECTIONS = {
     TEAMS: "teams",
-    MATCHES: "matches"
+    MATCHES: "matches",
+    MANAGERS: "managers"
 };
 
 // --- DATA SEEDING ---
 export const seedDatabase = async () => {
     try {
-        const batch = writeBatch(db);
-
-        // Seed Teams
         console.log("Seeding Teams...");
-        TEAMS.forEach(team => {
-            const teamRef = doc(db, COLLECTIONS.TEAMS, team.id);
-            batch.set(teamRef, team);
-        });
+        const { error: teamError } = await supabase.from(COLLECTIONS.TEAMS).upsert(TEAMS);
+        if (teamError) throw teamError;
 
-        // Seed Matches
+        console.log("Seeding Managers...");
+        // Convert numeric teamId to string to match Teams table
+        const managersData = managers.map(m => ({
+            ...m,
+            teamId: m.teamId ? String(m.teamId) : null
+        }));
+        const { error: managerError } = await supabase.from(COLLECTIONS.MANAGERS).upsert(managersData);
+        if (managerError) throw managerError;
+
         console.log("Seeding Matches...");
-        MATCHES.forEach(match => {
-            const matchRef = doc(db, COLLECTIONS.MATCHES, match.id);
-            // Ensure date is string
-            const matchData = {
-                ...match,
-                date: typeof match.date === 'string' ? match.date : new Date(match.date).toISOString()
-            };
-            batch.set(matchRef, matchData);
-        });
+        const matchesData = MATCHES.map(match => ({
+            ...match,
+            date: typeof match.date === 'string' ? match.date : new Date(match.date).toISOString()
+        }));
 
-        await batch.commit();
+        const { error: matchError } = await supabase.from(COLLECTIONS.MATCHES).upsert(matchesData);
+        if (matchError) throw matchError;
+
         console.log("Database Seeded Successfully!");
         return true;
     } catch (error) {
@@ -42,64 +43,75 @@ export const seedDatabase = async () => {
 };
 
 // --- READ OPERATIONS ---
-export const subscribeToMatches = (callback: (matches: any[]) => void) => {
+export const subscribeToMatches = (callback: (matches: any[]) => void, onError?: (error: any) => void) => {
     console.log("Starting Subscription to 'matches'...");
 
-    // Explicitly using string "matches" to avoid any variable weirdness
-    const q = query(collection(db, "matches"));
-
-    return onSnapshot(q, (snapshot) => {
-        console.log("Snapshot Received!");
-        console.log("Is Empty?", snapshot.empty);
-        console.log("Size:", snapshot.size);
-        console.log("From Cache?", snapshot.metadata.fromCache);
-
-        const matches = snapshot.docs
-            .map(doc => ({ id: doc.id, ...doc.data() }))
-            .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
-        callback(matches);
-    }, (error) => {
-        console.error("CRITICAL FIREBASE ERROR:", error);
+    // Initial Fetch
+    supabase.from('matches').select('*').then(({ data, error }) => {
+        if (error) {
+            console.error("Initial Fetch Error:", error);
+            if (onError) onError(error);
+        } else if (data) {
+            const sortedMatches = data.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+            callback(sortedMatches);
+        }
     });
-};
 
-// DEBUG: Force fetch from server to test connection/permissions
-export const debugForceFetch = async () => {
-    try {
-        console.log("DEBUG: Attempting FORCE FETCH from SERVER...");
-        const snapshot = await getDocsFromServer(query(collection(db, "matches")));
+    // Realtime Subscription
+    const channel = supabase.channel('public:matches')
+        .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'matches' },
+            (payload) => {
+                console.log('Change received!', payload);
+                // Re-fetch all matches on any change to ensure consistency (simplest approach)
+                // Optimization: Update local state based on payload
+                supabase.from('matches').select('*').then(({ data, error }) => {
+                    if (data) {
+                        const sortedMatches = data.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+                        callback(sortedMatches);
+                    }
+                });
+            }
+        )
+        .subscribe((status) => {
+            console.log("Subscription status:", status);
+            if (status === 'SUBSCRIBED') {
+                // ok
+            }
+            if (status === 'CHANNEL_ERROR') {
+                if (onError) onError("Channel Error");
+            }
+        });
 
-        console.log("DEBUG: Force Fetch Success!");
-        console.log("DEBUG: Server returned", snapshot.size, "docs.");
-        return { success: true, count: snapshot.size };
-    } catch (error: any) {
-        console.error("DEBUG: Force Fetch FAILED:", error);
-        return { success: false, error: error.message };
-    }
+    return () => {
+        supabase.removeChannel(channel);
+    };
 };
 
 export const getTeams = async () => {
-    const snapshot = await getDocs(collection(db, COLLECTIONS.TEAMS));
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const { data, error } = await supabase.from(COLLECTIONS.TEAMS).select('*');
+    if (error) throw error;
+    return data;
 };
 
 // --- WRITE OPERATIONS ---
 export const updateMatchScore = async (matchId: string, home: number, away: number, status?: "LIVE" | "FINISHED" | "SCHEDULED") => {
-    const matchRef = doc(db, COLLECTIONS.MATCHES, matchId);
-    const data: any = {
+    const updates: any = {
         score: { home, away }
     };
-    if (status) data.status = status;
+    if (status) updates.status = status;
 
-    await updateDoc(matchRef, data);
+    const { error } = await supabase.from(COLLECTIONS.MATCHES).update(updates).eq('id', matchId);
+    if (error) throw error;
 };
 
 export const updateMatchStatus = async (matchId: string, status: "LIVE" | "FINISHED" | "SCHEDULED") => {
-    const matchRef = doc(db, COLLECTIONS.MATCHES, matchId);
-    await updateDoc(matchRef, { status });
+    const { error } = await supabase.from(COLLECTIONS.MATCHES).update({ status }).eq('id', matchId);
+    if (error) throw error;
 };
 
 export const updateMatchDate = async (matchId: string, date: string) => {
-    const matchRef = doc(db, COLLECTIONS.MATCHES, matchId);
-    await updateDoc(matchRef, { date });
+    const { error } = await supabase.from(COLLECTIONS.MATCHES).update({ date }).eq('id', matchId);
+    if (error) throw error;
 };

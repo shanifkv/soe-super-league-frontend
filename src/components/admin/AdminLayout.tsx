@@ -1,11 +1,11 @@
 import { Outlet, Link, useNavigate } from "react-router-dom";
-import { auth } from "../../lib/firebase";
+import { supabase } from "../../lib/supabase";
 
 export default function AdminLayout() {
     const navigate = useNavigate();
 
     const handleLogout = async () => {
-        await auth.signOut();
+        await supabase.auth.signOut();
         navigate("/admin/login");
     };
 
@@ -19,6 +19,7 @@ export default function AdminLayout() {
                     <Link to="/admin" className="block px-4 py-2 rounded hover:bg-zinc-800 text-zinc-300 hover:text-white">Dashboard</Link>
                     <Link to="/admin/teams" className="block px-4 py-2 rounded hover:bg-zinc-800 text-zinc-300 hover:text-white">Teams</Link>
                     <Link to="/admin/fixtures" className="block px-4 py-2 rounded hover:bg-zinc-800 text-zinc-300 hover:text-white">Fixtures</Link>
+                    <Link to="/admin/settings" className="block px-4 py-2 rounded hover:bg-zinc-800 text-zinc-300 hover:text-white">Settings</Link>
                 </nav>
 
                 <button onClick={handleLogout} className="mt-auto text-left px-4 py-2 text-red-400 hover:text-red-300 text-sm">

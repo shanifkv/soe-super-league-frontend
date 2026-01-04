@@ -62,21 +62,27 @@ export const calculateStandings = (matches: any[]): { "Pool A": TeamStats[], "Po
             homeStats.won++;
             homeStats.points += 3;
             awayStats.lost++;
-            homeStats.form.push('W');
-            awayStats.form.push('L');
+            if (match.status === 'FINISHED') {
+                homeStats.form.push('W');
+                awayStats.form.push('L');
+            }
         } else if (match.score.home < match.score.away) {
             awayStats.won++;
             awayStats.points += 3;
             homeStats.lost++;
-            awayStats.form.push('W');
-            homeStats.form.push('L');
+            if (match.status === 'FINISHED') {
+                awayStats.form.push('W');
+                homeStats.form.push('L');
+            }
         } else {
             homeStats.drawn++;
             homeStats.points += 1;
             awayStats.drawn++;
             awayStats.points += 1;
-            homeStats.form.push('D');
-            awayStats.form.push('D');
+            if (match.status === 'FINISHED') {
+                homeStats.form.push('D');
+                awayStats.form.push('D');
+            }
         }
     });
 

@@ -12,10 +12,7 @@ export default function ProtectedRoute() {
         );
     }
 
-    // Check for specific Admin UID
-    const ADMIN_UID = "1wRwAtKNIYfoHRao9QgWhUEbRVv1";
-
-    if (!user || user.uid !== ADMIN_UID) {
+    if (!user) {
         return <Navigate to="/admin/login" replace />;
     }
 

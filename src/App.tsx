@@ -12,6 +12,7 @@ import AdminLayout from "./components/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import TeamManager from "./pages/admin/TeamManager";
 import FixtureManager from "./pages/admin/FixtureManager";
+import Settings from "./pages/admin/Settings";
 
 import { AuthProvider } from "./context/AuthContext";
 
@@ -46,6 +47,7 @@ export default function App() {
             <Route index element={<Dashboard />} />
             <Route path="teams" element={<TeamManager />} />
             <Route path="fixtures" element={<FixtureManager />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
         </Route>
       </Routes>

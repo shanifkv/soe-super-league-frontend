@@ -1,6 +1,7 @@
+
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { type User, onAuthStateChanged } from "firebase/auth";
-import { auth } from "../lib/firebase";
+import { type User } from "@supabase/supabase-js";
+import { supabase } from "../lib/supabase";
 
 interface AuthContextType {
     user: User | null;
@@ -14,18 +15,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setUser(user);
+        // Check active session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setUser(session?.user ?? null);
             setLoading(false);
         });
 
-        // Fallback: If Firebase takes too long (e.g. missing connection/config), stop loading
-        const timeout = setTimeout(() => setLoading(false), 2000);
+        // Listen for changes
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null);
+            setLoading(false);
+        });
 
-        return () => {
-            unsubscribe();
-            clearTimeout(timeout);
-        };
+        return () => subscription.unsubscribe();
     }, []);
 
     return (

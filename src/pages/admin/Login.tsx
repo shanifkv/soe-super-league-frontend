@@ -1,6 +1,6 @@
+
 import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../lib/firebase";
+import { supabase } from "../../lib/supabase";
 import { useNavigate } from "react-router-dom";
 import soeLogo from "../../assets/soe-super-league-logo.png";
 
@@ -17,7 +17,12 @@ export default function Login() {
         setError("");
 
         try {
-            await signInWithEmailAndPassword(auth, email, password);
+            const { error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
+
+            if (error) throw error;
             navigate("/admin");
         } catch (err: any) {
             console.error(err);
@@ -46,7 +51,10 @@ export default function Login() {
                     <div>
                         <label className="block text-sm font-medium text-zinc-400 mb-1">Email</label>
                         <input
+                            id="email"
+                            name="email"
                             type="email"
+                            autoComplete="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full bg-zinc-800 border-zinc-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition-all"
@@ -58,7 +66,10 @@ export default function Login() {
                     <div>
                         <label className="block text-sm font-medium text-zinc-400 mb-1">Password</label>
                         <input
+                            id="password"
+                            name="password"
                             type="password"
+                            autoComplete="current-password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="w-full bg-zinc-800 border-zinc-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition-all"

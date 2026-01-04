@@ -69,18 +69,35 @@ export default function MatchCenter({ matches }: MatchCenterProps) {
             {/* SECTION 2: RECENT RESULTS */}
             {finishedMatches.length > 0 && (
                 <div className="w-full">
-                    <h3 className="text-zinc-500 text-[10px] font-bold tracking-widest uppercase mb-2 text-center md:text-left">Recent Results</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <h3 className="text-zinc-500 text-xs md:text-sm font-bold tracking-widest uppercase mb-4 text-center">Recent Results</h3>
+                    <div className="flex flex-wrap justify-center gap-3 md:gap-4">
                         {finishedMatches.map(match => (
-                            <div key={match.id} className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-2 flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <img src={match.homeTeam.logo} className="w-6 h-6 object-contain" />
-                                    <span className="text-[10px] font-bold text-zinc-300">{match.score.home}</span>
+                            <div key={match.id} className="w-full max-w-2xl bg-zinc-900/60 border border-zinc-800 rounded-xl p-3 md:p-6 flex items-center justify-between hover:bg-zinc-900 transition-colors">
+                                {/* Home Team */}
+                                <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
+                                    <img src={match.homeTeam.logo} className="w-8 h-8 md:w-16 md:h-16 object-contain flex-shrink-0" />
+                                    <div className="flex flex-col min-w-0">
+                                        <span className="text-xs md:text-xl font-bold text-white leading-tight break-words">{match.homeTeam.name}</span>
+                                        <span className="text-[10px] md:text-xs text-zinc-500 font-mono hidden md:block">HOME</span>
+                                    </div>
                                 </div>
-                                <span className="text-[8px] text-zinc-600 font-mono">FT</span>
-                                <div className="flex items-center gap-2 flex-row-reverse">
-                                    <img src={match.awayTeam.logo} className="w-6 h-6 object-contain" />
-                                    <span className="text-[10px] font-bold text-zinc-300">{match.score.away}</span>
+
+                                {/* Score */}
+                                <div className="flex items-center gap-2 md:gap-8 mx-2 md:mx-4 flex-shrink-0">
+                                    <span className="text-xl md:text-4xl font-black text-white">{match.score.home}</span>
+                                    <div className="flex flex-col items-center">
+                                        <span className="text-[8px] md:text-[10px] text-zinc-500 font-bold uppercase tracking-widest bg-zinc-800 px-1.5 py-0.5 md:px-2 md:py-1 rounded">FT</span>
+                                    </div>
+                                    <span className="text-xl md:text-4xl font-black text-white">{match.score.away}</span>
+                                </div>
+
+                                {/* Away Team */}
+                                <div className="flex items-center gap-2 md:gap-4 flex-1 justify-end min-w-0">
+                                    <div className="flex flex-col items-end min-w-0">
+                                        <span className="text-xs md:text-xl font-bold text-white leading-tight text-right break-words">{match.awayTeam.name}</span>
+                                        <span className="text-[10px] md:text-xs text-zinc-500 font-mono hidden md:block">AWAY</span>
+                                    </div>
+                                    <img src={match.awayTeam.logo} className="w-8 h-8 md:w-16 md:h-16 object-contain flex-shrink-0" />
                                 </div>
                             </div>
                         ))}
@@ -90,22 +107,24 @@ export default function MatchCenter({ matches }: MatchCenterProps) {
 
             {/* SECTION 3: UPCOMING */}
             {upcomingMatches.length > 0 && (
-                <div className="w-full">
-                    <h3 className="text-zinc-500 text-[10px] font-bold tracking-widest uppercase mb-2 text-center md:text-left">Coming Up</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div className="w-full mt-4">
+                    <h3 className="text-zinc-500 text-xs md:text-sm font-bold tracking-widest uppercase mb-4 text-center">Coming Up</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         {upcomingMatches.map(match => (
-                            <div key={match.id} className="bg-zinc-900/30 border border-zinc-800/50 rounded-lg p-2 flex items-center justify-between opacity-70 hover:opacity-100 transition-opacity">
-                                <div className="flex items-center gap-2">
-                                    <img src={match.homeTeam.logo} className="w-5 h-5 object-contain grayscale" />
-                                    <span className="text-[9px] font-bold text-zinc-400 truncate max-w-[50px]">{match.homeTeam.name}</span>
+                            <div key={match.id} className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-4 flex items-center justify-between hover:bg-zinc-900/80 transition-all group">
+                                <div className="flex items-center gap-3 flex-1 min-w-0">
+                                    <img src={match.homeTeam.logo} className="w-8 h-8 object-contain grayscale group-hover:grayscale-0 transition-all opacity-70 group-hover:opacity-100" />
+                                    <span className="text-xs font-bold text-zinc-400 group-hover:text-white truncate transition-colors">{match.homeTeam.name}</span>
                                 </div>
-                                <div className="text-center">
-                                    <div className="text-[9px] text-zinc-300 font-bold">{new Date(match.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</div>
-                                    <div className="text-[8px] text-zinc-600 uppercase">{new Date(match.date).toLocaleDateString([], { month: 'short', day: 'numeric' })}</div>
+                                <div className="text-center px-2 flex-shrink-0">
+                                    <div className="text-[10px] md:text-xs text-zinc-300 font-bold bg-zinc-800 px-2 py-1 rounded inline-block mb-1">
+                                        {new Date(match.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+                                    </div>
+                                    <div className="text-[9px] text-zinc-500 uppercase font-mono">{new Date(match.date).toLocaleDateString([], { month: 'short', day: 'numeric' })}</div>
                                 </div>
-                                <div className="flex items-center gap-2 flex-row-reverse">
-                                    <img src={match.awayTeam.logo} className="w-5 h-5 object-contain grayscale" />
-                                    <span className="text-[9px] font-bold text-zinc-400 truncate max-w-[50px]">{match.awayTeam.name}</span>
+                                <div className="flex items-center gap-3 flex-1 justify-end min-w-0">
+                                    <span className="text-xs font-bold text-zinc-400 group-hover:text-white truncate transition-colors">{match.awayTeam.name}</span>
+                                    <img src={match.awayTeam.logo} className="w-8 h-8 object-contain grayscale group-hover:grayscale-0 transition-all opacity-70 group-hover:opacity-100" />
                                 </div>
                             </div>
                         ))}

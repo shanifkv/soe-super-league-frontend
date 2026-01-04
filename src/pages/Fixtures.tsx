@@ -118,6 +118,17 @@ export default function Fixtures() {
                 Matches Fetched: {rounds.reduce((acc, r) => acc + r.matches.length, 0)}<br />
                 Project ID: {import.meta.env.VITE_FIREBASE_PROJECT_ID || "MISSING"}<br />
                 Rounds Found: {rounds.length}
+                <br />
+                <button
+                    onClick={async () => {
+                        const { debugForceFetch } = await import("../lib/adminService");
+                        const result = await debugForceFetch();
+                        alert(JSON.stringify(result, null, 2));
+                    }}
+                    className="mt-2 bg-white text-black px-2 py-1 rounded text-[10px] font-bold uppercase"
+                >
+                    Test Server Connection
+                </button>
             </div>
 
             <div className="max-w-7xl mx-auto">

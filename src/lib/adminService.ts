@@ -1,5 +1,5 @@
 
-import { collection, doc, updateDoc, onSnapshot, query, getDocs, writeBatch } from "firebase/firestore";
+import { collection, doc, updateDoc, onSnapshot, query, getDocs, writeBatch, getDocsFromServer } from "firebase/firestore";
 import { db } from "./firebase";
 import { TEAMS, MATCHES } from "../data/fixtures";
 
@@ -63,6 +63,20 @@ export const subscribeToMatches = (callback: (matches: any[]) => void) => {
     });
 };
 
+// DEBUG: Force fetch from server to test connection/permissions
+export const debugForceFetch = async () => {
+    try {
+        console.log("DEBUG: Attempting FORCE FETCH from SERVER...");
+        const snapshot = await getDocsFromServer(query(collection(db, "matches")));
+
+        console.log("DEBUG: Force Fetch Success!");
+        console.log("DEBUG: Server returned", snapshot.size, "docs.");
+        return { success: true, count: snapshot.size };
+    } catch (error: any) {
+        console.error("DEBUG: Force Fetch FAILED:", error);
+        return { success: false, error: error.message };
+    }
+};
 
 export const getTeams = async () => {
     const snapshot = await getDocs(collection(db, COLLECTIONS.TEAMS));

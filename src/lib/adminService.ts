@@ -62,9 +62,7 @@ export const subscribeToMatches = (callback: (matches: any[]) => void) => {
         console.error("CRITICAL FIREBASE ERROR:", error);
     });
 };
-console.error("CRITICAL FIREBASE ERROR:", error);
-    });
-};
+
 
 export const getTeams = async () => {
     const snapshot = await getDocs(collection(db, COLLECTIONS.TEAMS));

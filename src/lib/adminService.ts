@@ -1,4 +1,5 @@
-import { collection, doc, updateDoc, onSnapshot, query, orderBy, getDocs, writeBatch } from "firebase/firestore";
+
+import { collection, doc, updateDoc, onSnapshot, query, getDocs, writeBatch } from "firebase/firestore";
 import { db } from "./firebase";
 import { TEAMS, MATCHES } from "../data/fixtures";
 

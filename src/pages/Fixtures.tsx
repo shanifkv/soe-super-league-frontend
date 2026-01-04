@@ -111,6 +111,15 @@ export default function Fixtures() {
 
     return (
         <main className="min-h-screen bg-black text-white pt-24 pb-16 px-6">
+            {/* DEBUG BANNER - REMOVE AFTER FIX */}
+            <div className="bg-red-900 border border-red-500 p-2 mb-4 text-xs font-mono text-white rounded">
+                <strong>DEBUG DIAGNOSTICS:</strong><br />
+                Status: {loading ? "Loading..." : "Ready"}<br />
+                Matches Fetched: {rounds.reduce((acc, r) => acc + r.matches.length, 0)}<br />
+                Project ID: {import.meta.env.VITE_FIREBASE_PROJECT_ID || "MISSING"}<br />
+                Rounds Found: {rounds.length}
+            </div>
+
             <div className="max-w-7xl mx-auto">
                 {/* Page Header */}
                 <div className="text-center mb-12 animate-fade-in">

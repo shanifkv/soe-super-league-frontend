@@ -66,7 +66,7 @@ export const subscribeToMatches = (callback: (matches: any[]) => void, onError?:
                 console.log('Change received!', payload);
                 // Re-fetch all matches on any change to ensure consistency (simplest approach)
                 // Optimization: Update local state based on payload
-                supabase.from('matches').select('*').then(({ data, error }) => {
+                supabase.from('matches').select('*').then(({ data }) => {
                     if (data) {
                         const sortedMatches = data.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
                         callback(sortedMatches);

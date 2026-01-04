@@ -72,7 +72,7 @@ export default function MatchCenter({ matches }: MatchCenterProps) {
                     <h3 className="text-zinc-500 text-xs md:text-sm font-bold tracking-widest uppercase mb-4 text-center">Recent Results</h3>
                     <div className="flex flex-wrap justify-center gap-3 md:gap-4">
                         {finishedMatches.map(match => (
-                            <div key={match.id} className="w-full max-w-2xl bg-zinc-900/60 border border-zinc-800 rounded-xl p-3 md:p-6 flex items-center justify-between hover:bg-zinc-900 transition-colors">
+                            <div key={match.id} className="w-full max-w-2xl bg-zinc-950/90 border border-zinc-800 rounded-xl p-3 md:p-6 flex items-center justify-between hover:bg-black transition-colors">
                                 {/* Home Team */}
                                 <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
                                     <img src={match.homeTeam.logo} className="w-8 h-8 md:w-16 md:h-16 object-contain flex-shrink-0" />
@@ -111,7 +111,7 @@ export default function MatchCenter({ matches }: MatchCenterProps) {
                     <h3 className="text-zinc-500 text-xs md:text-sm font-bold tracking-widest uppercase mb-4 text-center">Coming Up</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         {upcomingMatches.map(match => (
-                            <div key={match.id} className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-4 flex items-center justify-between hover:bg-zinc-900/80 transition-all group">
+                            <div key={match.id} className="bg-zinc-950/80 border border-zinc-800 rounded-xl p-4 flex items-center justify-between hover:bg-zinc-900 transition-all group">
                                 <div className="flex items-center gap-3 flex-1 min-w-0">
                                     <img src={match.homeTeam.logo} className="w-8 h-8 object-contain grayscale group-hover:grayscale-0 transition-all opacity-70 group-hover:opacity-100" />
                                     <span className="text-xs font-bold text-zinc-400 group-hover:text-white truncate transition-colors">{match.homeTeam.name}</span>

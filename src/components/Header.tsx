@@ -12,7 +12,7 @@ export default function Header() {
                     <img
                         src={saharaLogo}
                         alt="Sahara Community"
-                        className="h-16 md:h-24 w-auto object-contain brightness-0 invert drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] hover:scale-105 transition-transform duration-300"
+                        className="h-16 md:h-20 lg:h-24 w-auto object-contain brightness-0 invert drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] hover:scale-105 transition-transform duration-300"
                     />
                 </NavLink>
 

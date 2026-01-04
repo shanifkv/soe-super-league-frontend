@@ -146,7 +146,7 @@ export default function Home() {
       {/* Audio Control */}
       <button
         onClick={toggleAudio}
-        className="absolute top-6 right-6 z-50 p-3 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all text-white border border-white/10 hover:border-white/30"
+        className="fixed top-24 md:top-32 right-6 z-[100] p-2.5 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all text-white border border-white/10 hover:border-white/30"
         aria-label={isMuted ? "Unmute" : "Mute"}
       >
         {isMuted ? (

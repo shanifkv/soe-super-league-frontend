@@ -20,7 +20,7 @@ const toLocalISOString = (date: Date) => {
 export default function FixtureManager() {
     const [matches, setMatches] = useState<Match[]>([]);
     const [loading, setLoading] = useState(true);
-    const [seeding, setSeeding] = useState(false);
+    const [seedStatus, setSeedStatus] = useState<"idle" | "seeding" | "success" | "error">("idle");
 
     useEffect(() => {
         const unsubscribe = subscribeToMatches((data) => {
@@ -32,15 +32,15 @@ export default function FixtureManager() {
 
     const handleSeed = async () => {
         if (!window.confirm("This will overwrite existing data. Continue?")) return;
-        setSeeding(true);
+        setSeedStatus("seeding");
         try {
             await seedDatabase();
-            alert("Database seeded successfully!");
+            setSeedStatus("success");
+            setTimeout(() => setSeedStatus("idle"), 2000);
         } catch (error) {
             console.error(error);
-            alert("Error seeding database.");
-        } finally {
-            setSeeding(false);
+            setSeedStatus("error");
+            setTimeout(() => setSeedStatus("idle"), 2000);
         }
     };
 
@@ -74,10 +74,16 @@ export default function FixtureManager() {
                 <h1 className="text-3xl font-bold text-white">Fixture Manager</h1>
                 <button
                     onClick={handleSeed}
-                    disabled={seeding}
-                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded disabled:opacity-50"
+                    disabled={seedStatus === "seeding"}
+                    className={`px-4 py-2 rounded disabled:opacity-50 text-white transition-colors ${seedStatus === "success" ? "bg-green-600" :
+                            seedStatus === "error" ? "bg-red-800" :
+                                "bg-red-600 hover:bg-red-700"
+                        }`}
                 >
-                    {seeding ? "Seeding..." : "Reset / Seed Database"}
+                    {seedStatus === "seeding" ? "Seeding..." :
+                        seedStatus === "success" ? "Success!" :
+                            seedStatus === "error" ? "Failed" :
+                                "Reset / Seed Database"}
                 </button>
             </div>
 

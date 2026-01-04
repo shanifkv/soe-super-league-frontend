@@ -43,15 +43,26 @@ export const seedDatabase = async () => {
 
 // --- READ OPERATIONS ---
 export const subscribeToMatches = (callback: (matches: any[]) => void) => {
-    // REMOVED orderBy("date", "asc") to rely on client-side sorting (fixes potential index issues)
-    const q = query(collection(db, COLLECTIONS.MATCHES));
+    console.log("Starting Subscription to 'matches'...");
+
+    // Explicitly using string "matches" to avoid any variable weirdness
+    const q = query(collection(db, "matches"));
+
     return onSnapshot(q, (snapshot) => {
+        console.log("Snapshot Received!");
+        console.log("Is Empty?", snapshot.empty);
+        console.log("Size:", snapshot.size);
+        console.log("From Cache?", snapshot.metadata.fromCache);
+
         const matches = snapshot.docs
             .map(doc => ({ id: doc.id, ...doc.data() }))
             .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
         callback(matches);
     }, (error) => {
         console.error("CRITICAL FIREBASE ERROR:", error);
+    });
+};
+console.error("CRITICAL FIREBASE ERROR:", error);
     });
 };
 

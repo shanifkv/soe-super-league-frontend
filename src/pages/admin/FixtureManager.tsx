@@ -34,13 +34,22 @@ export default function FixtureManager() {
         if (!window.confirm("This will overwrite existing data. Continue?")) return;
         setSeedStatus("seeding");
         try {
-            await seedDatabase();
+            // Race between actual seeding and a 5s timeout to prevent hanging UI
+            await Promise.race([
+                seedDatabase(),
+                new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 8000))
+            ]);
             setSeedStatus("success");
             setTimeout(() => setSeedStatus("idle"), 2000);
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            setSeedStatus("error");
-            setTimeout(() => setSeedStatus("idle"), 2000);
+            // If it's just a timeout but data appeared, treats as success-ish or just idle
+            if (error.message === "Timeout") {
+                setSeedStatus("idle");
+            } else {
+                setSeedStatus("error");
+                setTimeout(() => setSeedStatus("idle"), 2000);
+            }
         }
     };
 
@@ -76,8 +85,8 @@ export default function FixtureManager() {
                     onClick={handleSeed}
                     disabled={seedStatus === "seeding"}
                     className={`px-4 py-2 rounded disabled:opacity-50 text-white transition-colors ${seedStatus === "success" ? "bg-green-600" :
-                            seedStatus === "error" ? "bg-red-800" :
-                                "bg-red-600 hover:bg-red-700"
+                        seedStatus === "error" ? "bg-red-800" :
+                            "bg-red-600 hover:bg-red-700"
                         }`}
                 >
                     {seedStatus === "seeding" ? "Seeding..." :

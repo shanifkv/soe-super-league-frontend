@@ -42,6 +42,8 @@ export default function Fixtures() {
     useEffect(() => {
         // Subscribe to Real-time Data
         const unsubscribe = subscribeToMatches((data) => {
+            console.log("Fixtures Page Received Data:", data);
+
             const groupedArgs: Record<string, Match[]> = {};
 
             data.forEach(match => {

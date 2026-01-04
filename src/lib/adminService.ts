@@ -42,10 +42,15 @@ export const seedDatabase = async () => {
 
 // --- READ OPERATIONS ---
 export const subscribeToMatches = (callback: (matches: any[]) => void) => {
-    const q = query(collection(db, COLLECTIONS.MATCHES), orderBy("date", "asc"));
+    // REMOVED orderBy("date", "asc") to rely on client-side sorting (fixes potential index issues)
+    const q = query(collection(db, COLLECTIONS.MATCHES));
     return onSnapshot(q, (snapshot) => {
-        const matches = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const matches = snapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
         callback(matches);
+    }, (error) => {
+        console.error("CRITICAL FIREBASE ERROR:", error);
     });
 };
 

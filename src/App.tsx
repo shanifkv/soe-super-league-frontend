@@ -13,6 +13,7 @@ import AdminLayout from "./components/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import TeamManager from "./pages/admin/TeamManager";
 import FixtureManager from "./pages/admin/FixtureManager";
+import KnockoutManager from "./pages/admin/KnockoutManager";
 import Predictions from "./pages/admin/Predictions";
 import Settings from "./pages/admin/Settings";
 
@@ -50,6 +51,7 @@ export default function App() {
             <Route index element={<Dashboard />} />
             <Route path="teams" element={<TeamManager />} />
             <Route path="fixtures" element={<FixtureManager />} />
+            <Route path="knockout" element={<KnockoutManager />} />
             <Route path="predictions" element={<Predictions />} />
             <Route path="settings" element={<Settings />} />
           </Route>

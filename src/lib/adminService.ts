@@ -56,6 +56,44 @@ export const seedDatabase = async () => {
     }
 };
 
+export const syncDatabase = async () => {
+    try {
+        console.log("Syncing Matches (Safe Mode)...");
+
+        // 1. Get existing match IDs
+        const { data: existingMatches, error: fetchError } = await supabase.from(COLLECTIONS.MATCHES).select('id');
+        if (fetchError) throw fetchError;
+
+        const existingIds = new Set(existingMatches?.map(m => m.id));
+
+        // 2. Filter new matches from config
+        const matchesData = MATCHES.map(match => ({
+            ...match,
+            date: typeof match.date === 'string' ? match.date : new Date(match.date).toISOString()
+        }));
+
+        const newMatches = matchesData.filter(m => !existingIds.has(m.id));
+
+        if (newMatches.length === 0) {
+            console.log("No new matches to sync.");
+            return { count: 0 };
+        }
+
+        console.log(`Found ${newMatches.length} new matches. Inserting...`);
+
+        // 3. Insert ONLY new matches
+        const { error: insertError } = await supabase.from(COLLECTIONS.MATCHES).insert(newMatches);
+        if (insertError) throw insertError;
+
+        console.log("Sync Complete!");
+        return { count: newMatches.length };
+
+    } catch (error) {
+        console.error("Error syncing database:", error);
+        throw error;
+    }
+};
+
 // --- READ OPERATIONS ---
 export const subscribeToMatches = (callback: (matches: any[]) => void, onError?: (error: any) => void) => {
     console.log("Starting Subscription to 'matches'...");

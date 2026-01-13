@@ -19,6 +19,7 @@ export default function AdminLayout() {
                     <Link to="/admin" className="block px-4 py-2 rounded hover:bg-zinc-800 text-zinc-300 hover:text-white">Dashboard</Link>
                     <Link to="/admin/teams" className="block px-4 py-2 rounded hover:bg-zinc-800 text-zinc-300 hover:text-white">Teams</Link>
                     <Link to="/admin/fixtures" className="block px-4 py-2 rounded hover:bg-zinc-800 text-zinc-300 hover:text-white">Fixtures</Link>
+                    <Link to="/admin/knockout" className="block px-4 py-2 rounded hover:bg-zinc-800 text-zinc-300 hover:text-white">Knockout Stage</Link>
                     <Link to="/admin/predictions" className="block px-4 py-2 rounded hover:bg-zinc-800 text-zinc-300 hover:text-white">Predictions</Link>
                     <Link to="/admin/settings" className="block px-4 py-2 rounded hover:bg-zinc-800 text-zinc-300 hover:text-white">Settings</Link>
                 </nav>

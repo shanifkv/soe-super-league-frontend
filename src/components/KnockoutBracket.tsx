@@ -70,8 +70,14 @@ export default function KnockoutBracket({ liveMatches }: KnockoutBracketProps) {
 
             {/* --- Left Side: Semi Final 1 --- */}
             <div className="flex flex-col justify-center gap-6 md:gap-8 w-full md:w-80 relative order-1">
-                <div className="text-center md:text-left mb-2 md:mb-4">
+                <div className="text-center md:text-left mb-2 md:mb-4 flex flex-col md:flex-row items-center gap-2">
                     <span className="text-zinc-500 text-xs font-bold uppercase tracking-widest">Semi Final 1</span>
+                    {semiFinal1?.status === 'LIVE' && (
+                        <div className="flex items-center gap-1.5 bg-red-600 px-2 py-0.5 rounded-full animate-pulse shadow-lg md:order-last order-first mb-1 md:mb-0">
+                            <div className="w-1.5 h-1.5 bg-white rounded-full" />
+                            <span className="text-white text-[10px] font-black tracking-widest uppercase">LIVE</span>
+                        </div>
+                    )}
                     {semiFinal1?.date && (
                         <div className="text-[10px] text-zinc-600 font-mono mt-1">
                             {new Date(semiFinal1.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' }).toUpperCase()} • {new Date(semiFinal1.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
@@ -101,8 +107,14 @@ export default function KnockoutBracket({ liveMatches }: KnockoutBracketProps) {
 
             {/* --- Right Side: Semi Final 2 --- */}
             <div className="flex flex-col justify-center gap-6 md:gap-8 w-full md:w-80 relative order-2 md:order-3">
-                <div className="text-center md:text-right mb-2 md:mb-4">
+                <div className="text-center md:text-right mb-2 md:mb-4 flex flex-col md:flex-row-reverse items-center gap-2">
                     <span className="text-zinc-500 text-xs font-bold uppercase tracking-widest">Semi Final 2</span>
+                    {semiFinal2?.status === 'LIVE' && (
+                        <div className="flex items-center gap-1.5 bg-red-600 px-2 py-0.5 rounded-full animate-pulse shadow-lg md:order-last order-first mb-1 md:mb-0">
+                            <div className="w-1.5 h-1.5 bg-white rounded-full" />
+                            <span className="text-white text-[10px] font-black tracking-widest uppercase">LIVE</span>
+                        </div>
+                    )}
                     {semiFinal2?.date && (
                         <div className="text-[10px] text-zinc-600 font-mono mt-1">
                             {new Date(semiFinal2.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' }).toUpperCase()} • {new Date(semiFinal2.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
@@ -190,10 +202,12 @@ export default function KnockoutBracket({ liveMatches }: KnockoutBracketProps) {
 function TeamBracketCard({ team, score, isWinner, align, status }: { team?: Team, score?: number, isWinner?: boolean, align: 'left' | 'right', status?: string }) {
     if (!team) return <div className="h-20 bg-zinc-900 rounded-xl animate-pulse" />;
 
+    const isLive = status === 'LIVE';
+
     return (
         <div className={`
             relative flex items-center gap-4 bg-zinc-900 border rounded-xl p-4 transition-all duration-300 z-20 w-full
-            ${isWinner ? 'border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.1)]' : 'border-zinc-800 hover:border-zinc-700'}
+            ${isWinner ? 'border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.1)]' : isLive ? 'border-red-600 shadow-[0_0_15px_rgba(220,38,38,0.3)]' : 'border-zinc-800 hover:border-zinc-700'}
         `}>
             {/* Logo */}
             <div className={`w-12 h-12 shrink-0 ${align === 'right' ? 'md:order-last' : ''}`}>
@@ -202,12 +216,12 @@ function TeamBracketCard({ team, score, isWinner, align, status }: { team?: Team
 
             {/* Name & Score */}
             <div className={`flex-1 flex flex-col ${align === 'right' ? 'md:items-end md:text-right items-start text-left' : 'items-start text-left'}`}>
-                <span className={`font-bold text-sm md:text-base uppercase leading-tight ${isWinner ? 'text-white' : 'text-zinc-300'}`}>
+                <span className={`font-bold text-sm md:text-base uppercase leading-tight ${isWinner ? 'text-white' : isLive ? 'text-white' : 'text-zinc-300'}`}>
                     {team.name}
                 </span>
 
                 {status !== 'SCHEDULED' ? (
-                    <span className={`text-xl md:text-2xl font-black ${isWinner ? 'text-yellow-500' : 'text-zinc-600'}`}>
+                    <span className={`text-xl md:text-3xl font-black ${isWinner ? 'text-yellow-500' : isLive ? 'text-red-500' : 'text-zinc-600'}`}>
                         {score}
                     </span>
                 ) : (

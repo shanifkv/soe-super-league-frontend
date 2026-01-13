@@ -2,14 +2,13 @@ import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import soeLogo from "../assets/soe-super-league-logo.png";
 
-import MatchCenter, { type Match } from "../components/MatchCenter";
+import { type Match } from "../components/MatchCenter";
 import KnockoutBracket from "../components/KnockoutBracket";
 import { subscribeToMatches } from "../lib/adminService";
 
 export default function Home() {
   const [isMuted, setIsMuted] = useState(true);
   const [matches, setMatches] = useState<Match[]>([]);
-  const [hasActivity, setHasActivity] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -19,9 +18,6 @@ export default function Home() {
     // Fetch matches to determine if we should show the Match Center
     const unsubscribe = subscribeToMatches((data) => {
       setMatches(data as Match[]);
-      // Show Match Center if any match is LIVE or FINISHED
-      const active = data.some((m: any) => m.status === 'LIVE' || m.status === 'FINISHED');
-      setHasActivity(active);
       setLoading(false);
     });
     return () => unsubscribe();
@@ -142,8 +138,8 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* MATCH CENTER (If Active Matches) */}
-              {hasActivity && <MatchCenter matches={matches} />}
+              {/* MATCH CENTER - REMOVED (Integrated into Bracket) */}
+              {/* {hasActivity && <MatchCenter matches={matches} />} */}
             </div>
           )}
 

@@ -33,32 +33,36 @@ export default function MatchCenter({ matches }: MatchCenterProps) {
 
                     <div className="flex flex-wrap justify-center gap-4">
                         {liveMatches.map(match => (
-                            <Link to={`/fixtures`} key={match.id} className="w-full max-w-lg bg-zinc-900/80 border border-red-500/30 rounded-xl p-4 flex flex-col items-center relative overflow-hidden group hover:bg-zinc-900 transition-all">
-                                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-600 to-transparent opacity-50" />
-
-                                <div className="flex items-center justify-between w-full mb-2">
-                                    <span className="text-[10px] text-zinc-500 font-mono">{match.homeTeam.pool ? `POOL ${match.homeTeam.pool}` : 'MATCH'}</span>
-                                    <span className="text-[10px] text-red-500 font-bold animate-pulse">LIVE</span>
+                            <Link to={`/fixtures`} key={match.id} className="w-full max-w-lg bg-black border-2 border-red-600 rounded-xl p-4 md:p-6 flex flex-col items-center relative overflow-hidden group hover:scale-[1.02] transition-transform shadow-[0_0_30px_rgba(220,38,38,0.3)]">
+                                {/* Live Pulse Badge */}
+                                <div className="absolute top-4 right-4 flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full animate-pulse">
+                                    <div className="w-2 h-2 bg-white rounded-full" />
+                                    <span className="text-white font-black text-xs tracking-widest uppercase">LIVE</span>
                                 </div>
 
-                                <div className="flex items-center justify-between w-full">
+                                <div className="flex items-center justify-between w-full mt-4">
                                     {/* Home */}
                                     <div className="flex flex-col items-center w-1/3">
-                                        <img src={match.homeTeam.logo} alt={match.homeTeam.name} className="w-10 h-10 md:w-12 md:h-12 object-contain mb-1" />
-                                        <span className="text-[10px] md:text-xs font-bold text-center uppercase leading-tight">{match.homeTeam.name}</span>
+                                        <img src={match.homeTeam.logo} alt={match.homeTeam.name} className="w-12 h-12 md:w-16 md:h-16 object-contain mb-2" />
+                                        <span className="text-sm md:text-lg font-bold text-center uppercase leading-tight text-white">{match.homeTeam.name}</span>
                                     </div>
 
                                     {/* Score */}
-                                    <div className="flex gap-2 text-2xl md:text-3xl font-black text-white font-mono">
-                                        <span>{match.score.home}</span>
-                                        <span className="text-zinc-600">-</span>
-                                        <span>{match.score.away}</span>
+                                    <div className="flex flex-col items-center relative z-10 mx-2">
+                                        <div className="flex gap-4 text-4xl md:text-6xl font-black text-white font-display tracking-tighter">
+                                            <span>{match.score.home}</span>
+                                            <span className="text-zinc-700">-</span>
+                                            <span>{match.score.away}</span>
+                                        </div>
+                                        <div className="text-[10px] text-zinc-500 font-mono mt-1 px-2 py-0.5 bg-zinc-900 rounded border border-zinc-800">
+                                            {match.homeTeam.pool ? `POOL ${match.homeTeam.pool}` : 'MATCH'}
+                                        </div>
                                     </div>
 
                                     {/* Away */}
                                     <div className="flex flex-col items-center w-1/3">
-                                        <img src={match.awayTeam.logo} alt={match.awayTeam.name} className="w-10 h-10 md:w-12 md:h-12 object-contain mb-1" />
-                                        <span className="text-[10px] md:text-xs font-bold text-center uppercase leading-tight">{match.awayTeam.name}</span>
+                                        <img src={match.awayTeam.logo} alt={match.awayTeam.name} className="w-12 h-12 md:w-16 md:h-16 object-contain mb-2" />
+                                        <span className="text-sm md:text-lg font-bold text-center uppercase leading-tight text-white">{match.awayTeam.name}</span>
                                     </div>
                                 </div>
                             </Link>

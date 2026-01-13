@@ -64,10 +64,25 @@ export const subscribeToMatches = (callback: (matches: any[]) => void, onError?:
     supabase.from('matches').select('*').then(({ data, error }) => {
         if (error) {
             console.error("Initial Fetch Error:", error);
+            // Fallback to static data on error too? Maybe safer.
+            const staticMatches = MATCHES.map(m => ({
+                ...m,
+                date: new Date(m.date).toISOString() // Ensure format compatibility
+            }));
+            callback(staticMatches as any[]);
             if (onError) onError(error);
-        } else if (data) {
-            const sortedMatches = data.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
-            callback(sortedMatches);
+        } else {
+            if (data && data.length > 0) {
+                const sortedMatches = data.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+                callback(sortedMatches);
+            } else {
+                console.log("No matches found in DB, using static fallback.");
+                const staticMatches = MATCHES.map(m => ({
+                    ...m,
+                    date: new Date(m.date).toISOString()
+                }));
+                callback(staticMatches as any[]);
+            }
         }
     });
 

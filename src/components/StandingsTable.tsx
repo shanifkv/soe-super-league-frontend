@@ -56,19 +56,25 @@ export default function StandingsTable({ poolName, teams }: StandingsTableProps)
                             return (
                                 <tr
                                     key={team.teamName}
-                                    className="group border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer"
+                                    className="group border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer relative"
                                     onClick={() => navigate(`/fixtures?team=${team.teamId}`, { state: { from: "/standings" } })}
                                 >
                                     <td className="py-2 md:py-3 px-1 md:px-2 text-center relative">
+                                        {/* Qualification Indicator Line */}
                                         {isQualifier && (
-                                            <>
-                                                <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-yellow-500" />
-                                                <div className="absolute left-2 top-1/2 -translate-y-1/2 flex items-center">
-                                                    <span className="text-[10px] font-black text-yellow-500 bg-black/80 px-1.5 py-0.5 rounded border border-yellow-500/50 shadow-[0_0_10px_rgba(234,179,8,0.6)] animate-pulse">Q</span>
-                                                </div>
-                                            </>
+                                            <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-yellow-500 rounded-r shadow-[0_0_8px_rgba(234,179,8,0.5)]" />
                                         )}
-                                        <span className={`transition-colors relative z-10 pl-6 ${isQualifier ? 'text-white font-bold' : 'text-zinc-400 group-hover:text-white'}`}>{team.rank}</span>
+
+                                        <div className="flex items-center justify-center gap-2 relative pl-2">
+                                            {isQualifier && (
+                                                <div className="flex items-center justify-center w-4 h-4 bg-yellow-500/10 border border-yellow-500 rounded text-[9px] font-black text-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.2)]">
+                                                    Q
+                                                </div>
+                                            )}
+                                            <span className={`transition-colors ${isQualifier ? 'text-white font-bold' : 'text-zinc-500 group-hover:text-white'}`}>
+                                                {team.rank}
+                                            </span>
+                                        </div>
                                     </td>
                                     <td className="py-2 md:py-3 px-1 md:px-2">
                                         <div className="flex items-center gap-2 md:gap-3">
@@ -77,7 +83,7 @@ export default function StandingsTable({ poolName, teams }: StandingsTableProps)
                                             ) : (
                                                 <div className="w-5 h-5 md:w-8 md:h-8 bg-zinc-800 rounded-full" />
                                             )}
-                                            <span className={`text-xs md:text-base font-bold ${isQualifier ? 'text-white' : 'text-zinc-300'} group-hover:text-white`}>
+                                            <span className={`text-xs md:text-base font-bold uppercase tracking-tight ${isQualifier ? 'text-white' : 'text-zinc-300'} group-hover:text-white`}>
                                                 {team.teamName}
                                             </span>
                                         </div>
@@ -93,12 +99,12 @@ export default function StandingsTable({ poolName, teams }: StandingsTableProps)
                                         {team.points}
                                     </td>
                                     <td className="py-2 md:py-3 px-1 md:px-2">
-                                        <div className="flex items-center justify-center gap-[1px] md:gap-1">
+                                        <div className="flex items-center justify-center gap-[2px]">
                                             {team.form.map((result, i) => (
                                                 <span
                                                     key={i}
                                                     className={`
-                                                        w-4 h-4 md:w-6 md:h-6 flex items-center justify-center rounded text-[8px] md:text-[10px] font-bold text-white
+                                                        w-4 h-4 md:w-5 md:h-5 flex items-center justify-center rounded-[2px] text-[8px] md:text-[9px] font-black text-white uppercase
                                                         ${result === 'W' ? 'bg-green-600' : result === 'D' ? 'bg-zinc-500' : 'bg-red-600'}
                                                     `}
                                                 >
@@ -114,11 +120,11 @@ export default function StandingsTable({ poolName, teams }: StandingsTableProps)
                 </table>
             </div>
 
-            <div className="mt-2 flex items-center gap-2 text-[10px] text-zinc-500 uppercase tracking-widest pl-2">
-                <div className="w-2 h-2 bg-yellow-500 rounded-full" />
-                <span>Semi-Final Qualification</span>
+            <div className="mt-4 flex items-center gap-2 pl-2">
+                <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full shadow-[0_0_5px_rgba(234,179,8,0.8)]" />
+                <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Semi-Final Qualification</span>
             </div>
-            <div className="mt-1 pl-2 text-[10px] text-zinc-600">
+            <div className="mt-1 pl-4 text-[10px] text-zinc-600 font-mono">
                 * Tie-breakers: GD &gt; Cards &gt; Head-to-Head &gt; Goal Scored &gt; Toss
             </div>
         </div >

@@ -15,34 +15,38 @@ export const TEAMS = [
 
 const MATCH_CONFIG = [
     // Round 1
-    { home: "48", away: "30", date: "2026-01-06T17:00:00", round: "Round 1" }, // FC Malabaris vs FC Bavaria (06/01 5:00 PM)
-    { home: "46", away: "42", date: "2026-01-07T16:30:00", round: "Round 1" }, // Club D Fumingo vs Bellari United (07/01 4:30 PM)
-    { home: "45", away: "43", date: "2026-01-06T17:30:00", round: "Round 1" }, // Gunners FC vs FC Desham (06/01 5:30 PM)
-    { home: "41", away: "31", date: "2026-01-07T17:00:00", round: "Round 1" }, // Al Qadr FC vs FC Cuba (07/01 5:00 PM)
+    { home: "48", away: "30", date: "2026-01-06T17:00:00", round: "Round 1", score: { home: 2, away: 1 } }, // FC Malabaris 2-1 FC Bavaria
+    { home: "46", away: "42", date: "2026-01-07T16:30:00", round: "Round 1", score: { home: 1, away: 1 } }, // Club D Fumingo 1-1 Bellari United
+    { home: "45", away: "43", date: "2026-01-06T17:30:00", round: "Round 1", score: { home: 3, away: 0 } }, // Gunners FC 3-0 FC Desham
+    { home: "41", away: "31", date: "2026-01-07T17:00:00", round: "Round 1", score: { home: 0, away: 2 } }, // Al Qadr FC 0-2 FC Cuba
 
     // Round 2
-    { home: "47", away: "46", date: "2026-01-12T17:00:00", round: "Round 2" }, // Aetoz FC vs Club D Fumingo (12/01 5:00 PM)
-    { home: "42", away: "48", date: "2026-01-11T17:30:00", round: "Round 2" }, // Bellari United vs FC Malabaris (11/01 5:30 PM)
-    { home: "44", away: "41", date: "2026-01-12T16:30:00", round: "Round 2" }, // Palliyangadi FC vs Al Qadr FC (12/01 4:30 PM)
-    { home: "31", away: "45", date: "2026-01-12T17:30:00", round: "Round 2" }, // FC Cuba vs Gunners FC (12/01 5:30 PM)
+    { home: "47", away: "46", date: "2026-01-12T17:00:00", round: "Round 2", score: { home: 2, away: 0 } }, // Aetoz FC 2-0 Club D Fumingo
+    { home: "42", away: "48", date: "2026-01-11T17:30:00", round: "Round 2", score: { home: 0, away: 1 } }, // Bellari United 0-1 FC Malabaris
+    { home: "44", away: "41", date: "2026-01-12T16:30:00", round: "Round 2", score: { home: 4, away: 1 } }, // Palliyangadi FC 4-1 Al Qadr FC
+    { home: "31", away: "45", date: "2026-01-12T17:30:00", round: "Round 2", score: { home: 1, away: 1 } }, // FC Cuba 1-1 Gunners FC
 
     // Round 3
-    { home: "30", away: "42", date: "2026-01-10T17:00:00", round: "Round 3" }, // FC Bavaria vs Bellari United (10/01 5:00 PM)
-    { home: "48", away: "47", date: "2026-01-07T17:30:00", round: "Round 3" }, // FC Malabaris vs Aetoz FC (07/01 5:30 PM)
-    { home: "43", away: "31", date: "2026-01-10T17:30:00", round: "Round 3" }, // FC Desham vs FC Cuba (10/01 5:30 PM)
-    { home: "45", away: "44", date: "2026-01-08T16:30:00", round: "Round 3" }, // Gunners FC vs Palliyangadi FC (08/01 4:30 PM)
+    { home: "30", away: "42", date: "2026-01-10T17:00:00", round: "Round 3", score: { home: 2, away: 2 } }, // FC Bavaria 2-2 Bellari United
+    { home: "48", away: "47", date: "2026-01-07T17:30:00", round: "Round 3", score: { home: 0, away: 0 } }, // FC Malabaris 0-0 Aetoz FC
+    { home: "43", away: "31", date: "2026-01-10T17:30:00", round: "Round 3", score: { home: 1, away: 3 } }, // FC Desham 1-3 FC Cuba
+    { home: "45", away: "44", date: "2026-01-08T16:30:00", round: "Round 3", score: { home: 2, away: 1 } }, // Gunners FC 2-1 Palliyangadi FC
 
     // Round 4
-    { home: "46", away: "48", date: "2026-01-09T17:30:00", round: "Round 4" }, // Club D Fumingo vs FC Malabaris (09/01 5:30 PM)
-    { home: "47", away: "30", date: "2026-01-11T16:30:00", round: "Round 4" }, // Aetoz FC vs FC Bavaria (11/01 4:30 PM)
-    { home: "41", away: "45", date: "2026-01-10T16:30:00", round: "Round 4" }, // Al Qadr FC vs Gunners FC (10/01 4:30 PM)
-    { home: "44", away: "43", date: "2026-01-11T17:00:00", round: "Round 4" }, // Palliyangadi FC vs FC Desham (11/01 5:00 PM)
+    { home: "46", away: "48", date: "2026-01-09T17:30:00", round: "Round 4", score: { home: 0, away: 2 } }, // Club D Fumingo 0-2 FC Malabaris
+    { home: "47", away: "30", date: "2026-01-11T16:30:00", round: "Round 4", score: { home: 1, away: 0 } }, // Aetoz FC 1-0 FC Bavaria
+    { home: "41", away: "45", date: "2026-01-10T16:30:00", round: "Round 4", score: { home: 0, away: 3 } }, // Al Qadr FC 0-3 Gunners FC
+    { home: "44", away: "43", date: "2026-01-11T17:00:00", round: "Round 4", score: { home: 5, away: 0 } }, // Palliyangadi FC 5-0 FC Desham
 
     // Round 5
-    { home: "42", away: "47", date: "2026-01-09T16:30:00", round: "Round 5" }, // Bellari United vs Aetoz FC (09/01 4:30 PM)
-    { home: "30", away: "46", date: "2026-01-08T17:00:00", round: "Round 5" }, // FC Bavaria vs Club D Fumingo (08/01 5:00 PM)
-    { home: "31", away: "44", date: "2026-01-09T17:00:00", round: "Round 5" }, // FC Cuba vs Palliyangadi FC (09/01 5:00 PM)
-    { home: "43", away: "41", date: "2026-01-08T17:30:00", round: "Round 5" }, // FC Desham vs Al Qadr FC (08/01 5:30 PM)
+    { home: "42", away: "47", date: "2026-01-09T16:30:00", round: "Round 5", score: { home: 1, away: 2 } }, // Bellari United 1-2 Aetoz FC
+    { home: "30", away: "46", date: "2026-01-08T17:00:00", round: "Round 5", score: { home: 3, away: 1 } }, // FC Bavaria 3-1 Club D Fumingo
+    { home: "31", away: "44", date: "2026-01-09T17:00:00", round: "Round 5", score: { home: 2, away: 2 } }, // FC Cuba 2-2 Palliyangadi FC
+    { home: "43", away: "41", date: "2026-01-08T17:30:00", round: "Round 5", score: { home: 1, away: 1 } }, // FC Desham 1-1 Al Qadr FC
+
+    // Semi Finals
+    { home: "47", away: "45", date: "2026-01-13T17:00:00", round: "Semi Final 1" }, // Aetoz FC vs Gunners FC (13/01 5:00 PM)
+    { home: "44", away: "30", date: "2026-01-13T17:30:00", round: "Semi Final 2" }, // Palliyangadi FC vs FC Bavaria (13/01 5:30 PM)
 ];
 
 // Generate Full Match Objects
@@ -54,6 +58,11 @@ export const MATCHES = MATCH_CONFIG.map((m, i) => {
         throw new Error(`Invalid team IDs in match config: ${m.home} vs ${m.away}`);
     }
 
+    // @ts-ignore - score property added to config dynamically
+    const score = m.score || { home: 0, away: 0 };
+    // @ts-ignore
+    const status = m.score ? "FINISHED" : "SCHEDULED";
+
     return {
         id: `m_${i + 1}`,
         homeTeam: home,
@@ -61,8 +70,8 @@ export const MATCHES = MATCH_CONFIG.map((m, i) => {
         homeTeamId: home.id,
         awayTeamId: away.id,
         date: m.date, // ISO String
-        status: "SCHEDULED" as const,
-        score: { home: 0, away: 0 },
+        status: status as "SCHEDULED" | "LIVE" | "FINISHED",
+        score: score,
         minute: 0,
         events: [],
         round: m.round

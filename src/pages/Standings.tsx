@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import StandingsTable, { type TeamStats } from "../components/StandingsTable";
 import { subscribeToMatches } from "../lib/adminService";
+import { MATCHES as STATIC_MATCHES } from "../data/fixtures";
 import { calculateStandings } from "../lib/standingsUtils";
 
 export default function Standings() {
@@ -12,7 +13,8 @@ export default function Standings() {
 
     useEffect(() => {
         const unsubscribe = subscribeToMatches((matches) => {
-            const calculated = calculateStandings(matches);
+            const matchesToUse = (matches && matches.length > 0) ? matches : STATIC_MATCHES;
+            const calculated = calculateStandings(matchesToUse);
             setStandings(calculated);
             setLoading(false);
         });

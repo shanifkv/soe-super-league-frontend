@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams, useLocation } from "react-router-dom";
 import { subscribeToMatches } from "../lib/adminService";
-// import { MATCHES } from "../data/fixtures"; // Removed static import
+import { MATCHES as STATIC_MATCHES } from "../data/fixtures";
 
 interface Team {
     id: string;
@@ -17,7 +17,7 @@ interface Match {
     awayTeam: Team;
     status: "SCHEDULED" | "LIVE" | "FINISHED";
     score: { home: number; away: number };
-    date: string; // Changed from Timestamp to string (ISO)
+    date: string; // ISO String
     round: string;
 }
 
@@ -44,22 +44,31 @@ export default function Fixtures() {
         const unsubscribe = subscribeToMatches((data) => {
             console.log("Fixtures Page Received Data:", data);
 
+            // FALLBACK: If no data from Supabase, use static matches
+            const matchesToUse = (data && data.length > 0) ? data : (STATIC_MATCHES as unknown as Match[]);
+
             const groupedArgs: Record<string, Match[]> = {};
 
-            data.forEach(match => {
-                const roundTitle = match.round;
-                if (!groupedArgs[roundTitle]) groupedArgs[roundTitle] = [];
-                groupedArgs[roundTitle].push(match);
+            matchesToUse.forEach(match => {
+                const dateObj = new Date(match.date);
+                const dateKey = dateObj.toLocaleDateString('en-GB', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long'
+                });
+
+                if (!groupedArgs[dateKey]) groupedArgs[dateKey] = [];
+                groupedArgs[dateKey].push(match);
             });
 
-            // Convert to array and sort by round number
+            // Convert to array and sort by date of the first match in the group
             const roundsArray = Object.entries(groupedArgs).map(([title, matches]) => ({
                 title,
                 matches
             })).sort((a, b) => {
-                const numA = parseInt(a.title.replace(/\D/g, '')) || 999;
-                const numB = parseInt(b.title.replace(/\D/g, '')) || 999;
-                return numA - numB;
+                const dateA = new Date(a.matches[0].date).getTime();
+                const dateB = new Date(b.matches[0].date).getTime();
+                return dateA - dateB;
             });
 
             setRounds(roundsArray);
@@ -111,8 +120,6 @@ export default function Fixtures() {
 
     return (
         <main className="min-h-screen bg-black text-white pt-24 pb-16 px-6">
-
-
             <div className="max-w-7xl mx-auto">
                 {/* Page Header */}
                 <div className="text-center mb-12 animate-fade-in">
@@ -174,10 +181,8 @@ export default function Fixtures() {
                                         const isHome = home.id === teamIdParam;
                                         const isAway = away.id === teamIdParam;
 
-                                        // Format Date Display
                                         const matchDate = new Date(match.date);
                                         const timeString = matchDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-                                        const dateString = matchDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
 
                                         return (
                                             <div
@@ -222,7 +227,7 @@ export default function Fixtures() {
                                                     ) : (
                                                         <div className="flex flex-col items-center text-zinc-500">
                                                             <span className="font-mono text-[10px] md:text-sm font-bold text-zinc-300 whitespace-nowrap">{timeString}</span>
-                                                            <span className="text-[8px] md:text-[10px] text-zinc-600 uppercase whitespace-nowrap">{dateString}</span>
+                                                            <span className="text-[8px] md:text-[10px] text-zinc-600 uppercase whitespace-nowrap">{match.round}</span>
                                                         </div>
                                                     )}
                                                     {match.status === "LIVE" && <span className="text-[9px] text-red-500 font-bold animate-pulse mt-0.5">LIVE</span>}
@@ -256,6 +261,6 @@ export default function Fixtures() {
                     )}
                 </div>
             </div>
-        </main >
+        </main>
     );
 }

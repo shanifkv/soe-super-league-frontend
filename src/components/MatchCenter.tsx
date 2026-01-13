@@ -2,11 +2,12 @@ import { Link } from "react-router-dom";
 
 export interface Match {
     id: string;
-    homeTeam: { name: string; logo: string; id: string; pool?: string };
-    awayTeam: { name: string; logo: string; id: string; pool?: string };
+    homeTeam: { name: string; logo: string; id: string; pool?: string; shortName?: string };
+    awayTeam: { name: string; logo: string; id: string; pool?: string; shortName?: string };
     status: "SCHEDULED" | "LIVE" | "FINISHED";
     score: { home: number; away: number };
     date: string;
+    round: string;
 }
 
 interface MatchCenterProps {

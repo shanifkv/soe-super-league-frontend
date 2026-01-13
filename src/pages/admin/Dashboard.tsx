@@ -56,6 +56,9 @@ export default function Dashboard() {
                     <Link to="/admin/teams" className="bg-zinc-800 text-white font-bold px-6 py-3 rounded-lg hover:bg-zinc-700 transition-colors">
                         View Teams
                     </Link>
+                    <Link to="/admin/predictions" className="bg-zinc-800 text-white font-bold px-6 py-3 rounded-lg hover:bg-zinc-700 transition-colors">
+                        Predictions
+                    </Link>
                 </div>
             </div>
         </div>

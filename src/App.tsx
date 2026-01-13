@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Teams from "./pages/Teams";
 import Fixtures from "./pages/Fixtures";
 import Standings from "./pages/Standings";
+import Knockout from "./pages/Knockout";
 
 // Admin Components
 import Login from "./pages/admin/Login";
@@ -12,6 +13,7 @@ import AdminLayout from "./components/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import TeamManager from "./pages/admin/TeamManager";
 import FixtureManager from "./pages/admin/FixtureManager";
+import Predictions from "./pages/admin/Predictions";
 import Settings from "./pages/admin/Settings";
 
 import { AuthProvider } from "./context/AuthContext";
@@ -38,6 +40,7 @@ export default function App() {
           <Route path="/teams" element={<Teams />} />
           <Route path="/fixtures" element={<Fixtures />} />
           <Route path="/standings" element={<Standings />} />
+          <Route path="/knockout" element={<Knockout />} />
         </Route>
 
         {/* Admin Routes */}
@@ -47,6 +50,7 @@ export default function App() {
             <Route index element={<Dashboard />} />
             <Route path="teams" element={<TeamManager />} />
             <Route path="fixtures" element={<FixtureManager />} />
+            <Route path="predictions" element={<Predictions />} />
             <Route path="settings" element={<Settings />} />
           </Route>
         </Route>

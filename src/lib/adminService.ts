@@ -6,8 +6,22 @@ import { managers } from "../data/Managers/manager";
 export const COLLECTIONS = {
     TEAMS: "teams",
     MATCHES: "matches",
-    MANAGERS: "managers"
+    MANAGERS: "managers",
+    PREDICTIONS: "predictions"
 };
+
+export interface Prediction {
+    id?: string;
+    student_name: string;
+    phone_number: string;
+    department: string;
+    year: string;
+    sf1_score_home: number;
+    sf1_score_away: number;
+    sf2_score_home: number;
+    sf2_score_away: number;
+    created_at?: string;
+}
 
 // --- DATA SEEDING ---
 export const seedDatabase = async () => {
@@ -114,4 +128,19 @@ export const updateMatchStatus = async (matchId: string, status: "LIVE" | "FINIS
 export const updateMatchDate = async (matchId: string, date: string) => {
     const { error } = await supabase.from(COLLECTIONS.MATCHES).update({ date }).eq('id', matchId);
     if (error) throw error;
+};
+// --- PREDICTION OPERATIONS ---
+export const submitPrediction = async (prediction: Prediction) => {
+    const { error } = await supabase.from(COLLECTIONS.PREDICTIONS).insert([prediction]);
+    if (error) throw error;
+};
+
+export const getPredictions = async () => {
+    const { data, error } = await supabase
+        .from(COLLECTIONS.PREDICTIONS)
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data as Prediction[];
 };

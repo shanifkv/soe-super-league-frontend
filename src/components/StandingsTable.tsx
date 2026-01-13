@@ -61,9 +61,14 @@ export default function StandingsTable({ poolName, teams }: StandingsTableProps)
                                 >
                                     <td className="py-2 md:py-3 px-1 md:px-2 text-center relative">
                                         {isQualifier && (
-                                            <div className="absolute left-0 top-3 bottom-3 w-[2px] md:w-[3px] bg-yellow-500 rounded-r-full" />
+                                            <>
+                                                <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-yellow-500" />
+                                                <div className="absolute left-2 top-1/2 -translate-y-1/2 flex items-center">
+                                                    <span className="text-[10px] font-black text-yellow-500 bg-black/80 px-1.5 py-0.5 rounded border border-yellow-500/50 shadow-[0_0_10px_rgba(234,179,8,0.6)] animate-pulse">Q</span>
+                                                </div>
+                                            </>
                                         )}
-                                        <span className="text-zinc-400 group-hover:text-white transition-colors">{team.rank}</span>
+                                        <span className={`transition-colors relative z-10 pl-6 ${isQualifier ? 'text-white font-bold' : 'text-zinc-400 group-hover:text-white'}`}>{team.rank}</span>
                                     </td>
                                     <td className="py-2 md:py-3 px-1 md:px-2">
                                         <div className="flex items-center gap-2 md:gap-3">
@@ -113,6 +118,9 @@ export default function StandingsTable({ poolName, teams }: StandingsTableProps)
                 <div className="w-2 h-2 bg-yellow-500 rounded-full" />
                 <span>Semi-Final Qualification</span>
             </div>
-        </div>
+            <div className="mt-1 pl-2 text-[10px] text-zinc-600">
+                * Tie-breakers: GD &gt; Cards &gt; Head-to-Head &gt; Goal Scored &gt; Toss
+            </div>
+        </div >
     );
 }

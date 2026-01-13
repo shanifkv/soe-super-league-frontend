@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import soeLogo from "../assets/soe-super-league-logo.png";
-import Countdown from "../components/Countdown";
+
 import MatchCenter, { type Match } from "../components/MatchCenter";
+import KnockoutBracket from "../components/KnockoutBracket";
 import { subscribeToMatches } from "../lib/adminService";
 
 export default function Home() {
@@ -116,25 +118,33 @@ export default function Home() {
         <div className="flex flex-col items-center gap-4 w-full">
 
           {loading ? (
-            // Loading State (Invisible placeholder)
-            <div className="h-32 w-full"></div>
-          ) : hasActivity ? (
-            // MATCH CENTER (Live/Results/Upcoming)
-            <MatchCenter matches={matches} />
+            // Loading State
+            <div className="h-32 w-full animate-pulse bg-zinc-900/50 rounded-xl"></div>
           ) : (
-            // PRE-SEASON COUNTDOWN
-            <>
-              <a
-                href="/fixtures"
-                className="text-xs md:text-sm uppercase tracking-widest text-yellow-500 hover:text-white transition-colors border-b-2 border-yellow-500/50 pb-1 hover:border-white font-bold"
-              >
-                View Full Fixtures →
-              </a>
+            <div className="flex flex-col w-full gap-8">
+              {/* ROAD TO FINAL BRACKET (ALWAYS VISIBLE) */}
+              <div className="w-full flex flex-col items-center gap-6 mt-8 animate-fade-in-up">
+                <div className="flex flex-col items-center text-center gap-4">
+                  <div className="relative">
+                    <h2 className="text-2xl md:text-4xl font-black text-white uppercase tracking-tighter relative z-10">Road to Final</h2>
+                    <div className="absolute -inset-4 bg-yellow-500/10 blur-xl rounded-full -z-0" />
+                  </div>
 
-              <div className="scale-75 origin-top">
-                <Countdown />
+                  <Link to="/knockout" className="bg-yellow-500 text-black font-black uppercase tracking-wider py-2 px-6 rounded-full shadow-[0_0_20px_rgba(234,179,8,0.3)] hover:bg-white hover:scale-105 transition-all text-sm z-20">
+                    Predict & Win
+                  </Link>
+                </div>
+
+                <div className="w-full overflow-x-auto pb-4 hide-scrollbar">
+                  <div className="min-w-[300px] md:min-w-0 transform scale-90 md:scale-100 origin-top">
+                    <KnockoutBracket liveMatches={matches} />
+                  </div>
+                </div>
               </div>
-            </>
+
+              {/* MATCH CENTER (If Active Matches) */}
+              {hasActivity && <MatchCenter matches={matches} />}
+            </div>
           )}
 
           <div className="mt-8 text-[8px] md:text-[10px] text-zinc-500 font-medium tracking-[0.2em] uppercase opacity-60 hover:opacity-100 transition-opacity">

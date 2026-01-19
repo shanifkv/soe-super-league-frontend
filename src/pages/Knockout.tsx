@@ -409,7 +409,7 @@ function PredictionModal({ onClose, homeTeam, awayTeam, onSuccess }: PredictionM
                                 <select required className="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2 text-white focus:border-yellow-500 outline-none appearance-none"
                                     value={formData.department} onChange={e => setFormData({ ...formData, department: e.target.value })}>
                                     <option value="">Select Dept</option>
-                                    <option value="CSE">CSE</option>
+
                                     <option value="CE">CE</option>
                                     <option value="ME">ME</option>
                                     <option value="EC">EC</option>

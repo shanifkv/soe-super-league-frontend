@@ -5,6 +5,7 @@ import soeLogo from "../assets/soe-super-league-logo.png";
 import { type Match } from "../components/MatchCenter";
 import KnockoutBracket from "../components/KnockoutBracket";
 import { subscribeToMatches } from "../lib/adminService";
+import { MATCHES as STATIC_MATCHES } from "../data/fixtures";
 
 export default function Home() {
   const [isMuted, setIsMuted] = useState(true);
@@ -118,17 +119,16 @@ export default function Home() {
             <div className="h-32 w-full animate-pulse bg-zinc-900/50 rounded-xl"></div>
           ) : (
             <div className="flex flex-col w-full gap-8">
-              {/* ROAD TO FINAL BRACKET (ALWAYS VISIBLE) */}
-              <div className="w-full flex flex-col items-center gap-6 mt-8 animate-fade-in-up">
+
+              {/* --- GRAND FINAL HERO CARD --- */}
+              <FinalHeroCard matches={matches} />
+
+              {/* ROAD TO FINAL BRACKET */}
+              <div className="w-full flex flex-col items-center gap-6 mt-8 animate-fade-in-up opacity-80 hover:opacity-100 transition-opacity duration-500">
                 <div className="flex flex-col items-center text-center gap-4">
                   <div className="relative">
-                    <h2 className="text-2xl md:text-4xl font-black text-white uppercase tracking-tighter relative z-10">Road to Final</h2>
-                    <div className="absolute -inset-4 bg-yellow-500/10 blur-xl rounded-full -z-0" />
+                    <h2 className="text-xl md:text-2xl font-black text-zinc-500 uppercase tracking-tighter relative z-10">Tournament Tree</h2>
                   </div>
-
-                  <Link to="/knockout" className="bg-yellow-500 text-black font-black uppercase tracking-wider py-2 px-6 rounded-full shadow-[0_0_20px_rgba(234,179,8,0.3)] hover:bg-white hover:scale-105 transition-all text-sm z-20">
-                    Predict & Win
-                  </Link>
                 </div>
 
                 <div className="w-full overflow-x-auto pb-4 hide-scrollbar">
@@ -137,9 +137,6 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-
-              {/* MATCH CENTER - REMOVED (Integrated into Bracket) */}
-              {/* {hasActivity && <MatchCenter matches={matches} />} */}
             </div>
           )}
 
@@ -168,5 +165,111 @@ export default function Home() {
 
       <audio ref={audioRef} loop src="/stadium-atmosphere.mp3" />
     </main>
+  );
+}
+
+function FinalHeroCard({ matches }: { matches: Match[] }) {
+  // Reuse logic to resolve finalists
+  const getMatch = (roundName: string): Match | undefined => {
+    let match = matches.find(m => m.round === roundName);
+    if (!match) {
+      const staticMatch = STATIC_MATCHES.find(m => m.round === roundName);
+      if (staticMatch) {
+        match = { ...staticMatch, status: "SCHEDULED", score: { home: 0, away: 0 } } as unknown as Match;
+      }
+    }
+    return match;
+  };
+
+  const semiFinal1 = getMatch("Semi Final 1");
+  const semiFinal2 = getMatch("Semi Final 2");
+  const finalMatch = getMatch("Grand Final") || getMatch("Final");
+
+  const semiFinal1Winner = semiFinal1?.status === 'FINISHED'
+    ? (semiFinal1.score.home > semiFinal1.score.away ? semiFinal1.homeTeam : semiFinal1.awayTeam)
+    : null;
+
+  const semiFinal2Winner = semiFinal2?.status === 'FINISHED'
+    ? (semiFinal2.score.home > semiFinal2.score.away ? semiFinal2.homeTeam : semiFinal2.awayTeam)
+    : null;
+
+  const finalist1 = finalMatch?.homeTeam || semiFinal1Winner;
+  const finalist2 = finalMatch?.awayTeam || semiFinal2Winner;
+
+  return (
+    <div className="relative w-full max-w-3xl mx-auto mt-6 mb-12 group">
+      {/* Background Glow Pulse */}
+      <div className="absolute -inset-1 bg-gradient-to-r from-yellow-600 via-yellow-400 to-yellow-600 opacity-30 blur-2xl group-hover:opacity-50 transition-opacity duration-1000 animate-pulse" />
+
+      <div className="relative bg-black border-2 border-yellow-500/50 rounded-3xl p-6 md:p-10 flex flex-col items-center gap-6 shadow-[0_0_50px_rgba(234,179,8,0.2)] overflow-hidden">
+
+        {/* Spotlight Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-yellow-500/10 via-transparent to-black pointer-events-none" />
+
+        {/* Header Label */}
+        <div className="flex items-center gap-3 relative z-10">
+          <span className="text-2xl">🏆</span>
+          <h3 className="text-yellow-500 font-black tracking-[0.3em] uppercase text-sm md:text-lg drop-shadow-md">
+            Grand Final
+          </h3>
+          <span className="text-2xl">🏆</span>
+        </div>
+
+        {/* Matchup Container */}
+        <div className="flex items-center justify-between w-full gap-2 md:gap-8 relative z-10">
+
+          {/* Team 1 */}
+          <div className="flex flex-col items-center gap-2 md:gap-4 flex-1">
+            <div className={`w-20 h-20 md:w-32 md:h-32 rounded-full border-4 border-yellow-500/30 p-2 md:p-4 bg-black/50 shadow-[0_0_30px_rgba(234,179,8,0.1)] transition-transform duration-500 group-hover:scale-110 flex items-center justify-center`}>
+              {finalist1 ? (
+                <img src={finalist1.logo} alt={finalist1.name} className="w-full h-full object-contain drop-shadow-lg" />
+              ) : (
+                <div className="w-full h-full bg-zinc-800 rounded-full animate-pulse" />
+              )}
+            </div>
+            <span className="text-lg md:text-2xl font-black text-white uppercase text-center leading-tight tracking-tight">
+              {finalist1?.name || "TBD"}
+            </span>
+          </div>
+
+          {/* VS & Time */}
+          <div className="flex flex-col items-center gap-2 md:gap-4 shrink-0 px-2">
+            <span className="text-4xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-yellow-300 to-yellow-600 italic tracking-tighter drop-shadow-sm">
+              VS
+            </span>
+            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded px-3 py-1 text-yellow-500 font-mono text-[10px] md:text-xs tracking-widest uppercase mb-2">
+              19 Jan • 17:00
+            </div>
+          </div>
+
+          {/* Team 2 */}
+          <div className="flex flex-col items-center gap-2 md:gap-4 flex-1">
+            <div className={`w-20 h-20 md:w-32 md:h-32 rounded-full border-4 border-yellow-500/30 p-2 md:p-4 bg-black/50 shadow-[0_0_30px_rgba(234,179,8,0.1)] transition-transform duration-500 group-hover:scale-110 flex items-center justify-center`}>
+              {finalist2 ? (
+                <img src={finalist2.logo} alt={finalist2.name} className="w-full h-full object-contain drop-shadow-lg" />
+              ) : (
+                <div className="w-full h-full bg-zinc-800 rounded-full animate-pulse" />
+              )}
+            </div>
+            <span className="text-lg md:text-2xl font-black text-white uppercase text-center leading-tight tracking-tight">
+              {finalist2?.name || "TBD"}
+            </span>
+          </div>
+
+        </div>
+
+        {/* CTA Button */}
+        <div className="mt-4 relative z-20">
+          <Link to="/knockout" className="group/btn relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-yellow-500 px-8 py-3 md:py-4 md:px-12 font-black uppercase tracking-widest text-black transition-all duration-300 hover:bg-white hover:scale-105 shadow-[0_0_40px_rgba(234,179,8,0.4)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)]">
+            <span className="relative z-10 flex items-center gap-2">
+              Predict Final Score
+              <svg className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+            </span>
+          </Link>
+          <p className="text-[10px] text-yellow-500/60 font-medium uppercase tracking-widest mt-2">Win prizes for correct score</p>
+        </div>
+
+      </div>
+    </div>
   );
 }

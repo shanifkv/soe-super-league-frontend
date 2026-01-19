@@ -32,6 +32,12 @@ export default function Knockout() {
         if (predicted) {
             setHasPredicted(true);
         }
+
+        // Check for direct link from Home page
+        const searchParams = new URLSearchParams(window.location.search);
+        if (searchParams.get('predict') === 'true' && !predicted) {
+            setShowPredictionModal(true);
+        }
     }, []);
 
     useEffect(() => {

@@ -127,7 +127,7 @@ export default function Home() {
               <div className="w-full flex flex-col items-center gap-6 mt-8 animate-fade-in-up opacity-80 hover:opacity-100 transition-opacity duration-500">
                 <div className="flex flex-col items-center text-center gap-4">
                   <div className="relative">
-                    <h2 className="text-xl md:text-2xl font-black text-zinc-500 uppercase tracking-tighter relative z-10">Tournament Tree</h2>
+                    <h2 className="text-xl md:text-2xl font-black text-zinc-500 uppercase tracking-tighter relative z-10">Road to Final</h2>
                   </div>
                 </div>
 
@@ -197,61 +197,60 @@ function FinalHeroCard({ matches }: { matches: Match[] }) {
   const finalist2 = finalMatch?.awayTeam || semiFinal2Winner;
 
   return (
-    <div className="relative w-full max-w-3xl mx-auto mt-6 mb-12 group">
-      {/* Background Glow Pulse */}
-      <div className="absolute -inset-1 bg-gradient-to-r from-yellow-600 via-yellow-400 to-yellow-600 opacity-30 blur-2xl group-hover:opacity-50 transition-opacity duration-1000 animate-pulse" />
+    <div className="relative w-full max-w-4xl mx-auto mt-6 mb-12 group">
+      {/* Background Glow Pulse - Softer on mobile */}
+      <div className="absolute -inset-1 bg-gradient-to-r from-yellow-600 via-yellow-400 to-yellow-600 opacity-20 md:opacity-30 blur-2xl md:blur-3xl group-hover:opacity-40 transition-opacity duration-1000 animate-pulse" />
 
-      <div className="relative bg-black border-2 border-yellow-500/50 rounded-3xl p-6 md:p-10 flex flex-col items-center gap-6 shadow-[0_0_50px_rgba(234,179,8,0.2)] overflow-hidden">
+      <div className="relative bg-black border-2 border-yellow-500/50 rounded-3xl p-6 md:p-12 flex flex-col items-center gap-6 md:gap-10 shadow-[0_0_50px_rgba(234,179,8,0.15)] overflow-hidden">
 
         {/* Spotlight Gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-yellow-500/10 via-transparent to-black pointer-events-none" />
 
         {/* Header Label */}
-        <div className="flex items-center gap-3 relative z-10">
-          <span className="text-2xl">🏆</span>
-          <h3 className="text-yellow-500 font-black tracking-[0.3em] uppercase text-sm md:text-lg drop-shadow-md">
-            Grand Final
+        <div className="flex items-center gap-3 relative z-10 animate-fade-in">
+          <h3 className="text-yellow-500 font-bold tracking-[0.2em] uppercase text-sm md:text-lg border border-yellow-500/30 px-4 py-1.5 rounded-full bg-yellow-500/5 backdrop-blur-sm">
+            GRAND FINAL
           </h3>
-          <span className="text-2xl">🏆</span>
         </div>
 
-        {/* Matchup Container */}
-        <div className="flex items-center justify-between w-full gap-2 md:gap-8 relative z-10">
+        {/* Matchup Container - Stack on Mobile */}
+        <div className="flex flex-col md:flex-row items-center justify-center w-full gap-8 md:gap-16 relative z-10">
 
           {/* Team 1 */}
-          <div className="flex flex-col items-center gap-2 md:gap-4 flex-1">
-            <div className={`w-20 h-20 md:w-32 md:h-32 rounded-full border-4 border-yellow-500/30 p-2 md:p-4 bg-black/50 shadow-[0_0_30px_rgba(234,179,8,0.1)] transition-transform duration-500 group-hover:scale-110 flex items-center justify-center`}>
+          <div className="flex flex-col items-center gap-3 md:gap-4 order-1">
+            <div className={`w-24 h-24 md:w-40 md:h-40 rounded-full border-4 border-yellow-500/30 p-4 bg-black/50 shadow-[0_0_30px_rgba(234,179,8,0.1)] transition-transform duration-500 group-hover:scale-110 flex items-center justify-center`}>
               {finalist1 ? (
-                <img src={finalist1.logo} alt={finalist1.name} className="w-full h-full object-contain drop-shadow-lg" />
+                <img src={finalist1.logo} alt={finalist1.name} className="w-full h-full object-contain drop-shadow-xl" />
               ) : (
                 <div className="w-full h-full bg-zinc-800 rounded-full animate-pulse" />
               )}
             </div>
-            <span className="text-lg md:text-2xl font-black text-white uppercase text-center leading-tight tracking-tight">
+            <span className="text-xl md:text-3xl font-black text-white uppercase text-center leading-tight tracking-tight drop-shadow-md">
               {finalist1?.name || "TBD"}
             </span>
           </div>
 
           {/* VS & Time */}
-          <div className="flex flex-col items-center gap-2 md:gap-4 shrink-0 px-2">
-            <span className="text-4xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-yellow-300 to-yellow-600 italic tracking-tighter drop-shadow-sm">
+          <div className="flex flex-col items-center gap-2 order-2 md:order-2 my-2 md:my-0">
+            <span className="text-5xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-br from-yellow-300 to-yellow-600 italic tracking-tighter drop-shadow-sm transform -rotate-6">
               VS
             </span>
-            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded px-3 py-1 text-yellow-500 font-mono text-[10px] md:text-xs tracking-widest uppercase mb-2">
-              19 Jan • 17:00
+            <div className="bg-yellow-500/20 border border-yellow-500/40 rounded-full px-4 py-1.5 text-yellow-500 font-mono text-[10px] md:text-xs tracking-widest uppercase backdrop-blur-md mb-2">
+              19 JAN • 05:00 PM
             </div>
+            <FinalCountdown targetDate="2026-01-19T17:00:00" />
           </div>
 
           {/* Team 2 */}
-          <div className="flex flex-col items-center gap-2 md:gap-4 flex-1">
-            <div className={`w-20 h-20 md:w-32 md:h-32 rounded-full border-4 border-yellow-500/30 p-2 md:p-4 bg-black/50 shadow-[0_0_30px_rgba(234,179,8,0.1)] transition-transform duration-500 group-hover:scale-110 flex items-center justify-center`}>
+          <div className="flex flex-col items-center gap-3 md:gap-4 order-3 md:order-3">
+            <div className={`w-24 h-24 md:w-40 md:h-40 rounded-full border-4 border-yellow-500/30 p-4 bg-black/50 shadow-[0_0_30px_rgba(234,179,8,0.1)] transition-transform duration-500 group-hover:scale-110 flex items-center justify-center`}>
               {finalist2 ? (
-                <img src={finalist2.logo} alt={finalist2.name} className="w-full h-full object-contain drop-shadow-lg" />
+                <img src={finalist2.logo} alt={finalist2.name} className="w-full h-full object-contain drop-shadow-xl" />
               ) : (
                 <div className="w-full h-full bg-zinc-800 rounded-full animate-pulse" />
               )}
             </div>
-            <span className="text-lg md:text-2xl font-black text-white uppercase text-center leading-tight tracking-tight">
+            <span className="text-xl md:text-3xl font-black text-white uppercase text-center leading-tight tracking-tight drop-shadow-md">
               {finalist2?.name || "TBD"}
             </span>
           </div>
@@ -259,16 +258,75 @@ function FinalHeroCard({ matches }: { matches: Match[] }) {
         </div>
 
         {/* CTA Button */}
-        <div className="mt-4 relative z-20">
-          <Link to="/knockout" className="group/btn relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-yellow-500 px-8 py-3 md:py-4 md:px-12 font-black uppercase tracking-widest text-black transition-all duration-300 hover:bg-white hover:scale-105 shadow-[0_0_40px_rgba(234,179,8,0.4)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)]">
-            <span className="relative z-10 flex items-center gap-2">
-              Predict Final Score
-              <svg className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+        <div className="mt-6 relative z-20 flex flex-col items-center gap-3 w-full md:w-auto">
+          <Link to="/knockout?predict=true" className="group/btn relative w-full md:w-auto inline-flex items-center justify-center gap-3 overflow-hidden rounded-full bg-gradient-to-r from-yellow-500 to-yellow-400 px-8 py-4 md:px-16 font-black uppercase tracking-widest text-black transition-all duration-300 hover:scale-105 shadow-[0_0_40px_rgba(234,179,8,0.4)] hover:shadow-[0_0_60px_rgba(255,255,255,0.6)]">
+            <span className="relative z-10 flex items-center gap-2 text-sm md:text-base">
+              PREDICT FINAL SCORE
             </span>
+            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
           </Link>
-          <p className="text-[10px] text-yellow-500/60 font-medium uppercase tracking-widest mt-2">Win prizes for correct score</p>
+          <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-widest opacity-80">
+            One prediction per user
+          </p>
         </div>
 
+      </div>
+    </div>
+  );
+}
+
+
+function FinalCountdown({ targetDate }: { targetDate: string }) {
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+
+  function calculateTimeLeft() {
+    const difference = +new Date(targetDate) - +new Date();
+    let timeLeft = {};
+
+    if (difference > 0) {
+      timeLeft = {
+        d: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        h: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        m: Math.floor((difference / 1000 / 60) % 60),
+        s: Math.floor((difference / 1000) % 60),
+      };
+    }
+    return timeLeft as { d: number, h: number, m: number, s: number };
+  }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+    return () => clearTimeout(timer);
+  });
+
+  const format = (num: number) => num < 10 ? `0${num}` : num;
+
+  if (Object.keys(timeLeft).length === 0) {
+    return <span className="text-yellow-500 font-black tracking-widest animate-pulse">LIVE NOW</span>;
+  }
+
+  return (
+    <div className="flex items-center gap-2 text-white font-mono text-xs md:text-sm">
+      <div className="flex flex-col items-center">
+        <span className="bg-zinc-800 px-2 py-1 rounded text-yellow-500 font-bold">{format(timeLeft.d)}</span>
+        <span className="text-[8px] text-zinc-500">DAYS</span>
+      </div>
+      <span className="text-zinc-600">:</span>
+      <div className="flex flex-col items-center">
+        <span className="bg-zinc-800 px-2 py-1 rounded text-yellow-500 font-bold">{format(timeLeft.h)}</span>
+        <span className="text-[8px] text-zinc-500">HRS</span>
+      </div>
+      <span className="text-zinc-600">:</span>
+      <div className="flex flex-col items-center">
+        <span className="bg-zinc-800 px-2 py-1 rounded text-yellow-500 font-bold">{format(timeLeft.m)}</span>
+        <span className="text-[8px] text-zinc-500">MIN</span>
+      </div>
+      <span className="text-zinc-600">:</span>
+      <div className="flex flex-col items-center">
+        <span className="bg-zinc-800 px-2 py-1 rounded text-yellow-500 font-bold opacity-80">{format(timeLeft.s)}</span>
+        <span className="text-[8px] text-zinc-500">SEC</span>
       </div>
     </div>
   );

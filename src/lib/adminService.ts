@@ -7,7 +7,8 @@ export const COLLECTIONS = {
     TEAMS: "teams",
     MATCHES: "matches",
     MANAGERS: "managers",
-    PREDICTIONS: "predictions"
+    PREDICTIONS: "predictions",
+    PREDICTIONS_FINAL: "predictions_final"
 };
 
 export interface Prediction {
@@ -20,6 +21,18 @@ export interface Prediction {
     sf1_score_away: number;
     sf2_score_home: number;
     sf2_score_away: number;
+    created_at?: string;
+}
+
+export interface FinalPrediction {
+    id?: string;
+    student_name: string;
+    phone_number: string;
+    email: string; // Added email field
+    department: string;
+    year: string;
+    final_score_home: number;
+    final_score_away: number;
     created_at?: string;
 }
 
@@ -185,6 +198,11 @@ export const updateMatchDate = async (matchId: string, date: string) => {
 // --- PREDICTION OPERATIONS ---
 export const submitPrediction = async (prediction: Prediction) => {
     const { error } = await supabase.from(COLLECTIONS.PREDICTIONS).insert([prediction]);
+    if (error) throw error;
+};
+
+export const submitFinalPrediction = async (prediction: FinalPrediction) => {
+    const { error } = await supabase.from(COLLECTIONS.PREDICTIONS_FINAL).insert([prediction]);
     if (error) throw error;
 };
 

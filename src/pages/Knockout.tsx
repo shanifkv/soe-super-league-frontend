@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { subscribeToMatches, submitPrediction } from "../lib/adminService";
+import { subscribeToMatches, submitFinalPrediction } from "../lib/adminService";
 import { MATCHES as STATIC_MATCHES } from "../data/fixtures";
 
 
@@ -24,6 +24,15 @@ export default function Knockout() {
     const [liveMatches, setLiveMatches] = useState<Match[]>([]);
     const [loading, setLoading] = useState(true);
     const [showPredictionModal, setShowPredictionModal] = useState(false);
+    const [hasPredicted, setHasPredicted] = useState(false);
+
+    useEffect(() => {
+        // Check local storage for previous prediction
+        const predicted = localStorage.getItem('hasPredictedFinal');
+        if (predicted) {
+            setHasPredicted(true);
+        }
+    }, []);
 
     useEffect(() => {
         const unsubscribe = subscribeToMatches((data) => {
@@ -95,7 +104,14 @@ export default function Knockout() {
                         The journey to the championship trophy.
                     </p>
 
-                    {new Date() < new Date('2026-01-13T17:00:00') ? (
+                    {hasPredicted ? (
+                        <button
+                            disabled
+                            className="bg-green-900/50 text-green-400 border border-green-500/30 font-black uppercase tracking-wider py-3 px-8 rounded-full cursor-not-allowed"
+                        >
+                            Prediction Submitted
+                        </button>
+                    ) : new Date() < new Date('2026-01-19T17:00:00') ? (
                         <button
                             onClick={() => setShowPredictionModal(true)}
                             className="bg-yellow-500 text-black font-black uppercase tracking-wider py-3 px-8 rounded-full hover:bg-yellow-400 transition-all shadow-[0_0_20px_rgba(234,179,8,0.3)] hover:shadow-[0_0_30px_rgba(234,179,8,0.5)] transform hover:scale-105"
@@ -239,7 +255,7 @@ export default function Knockout() {
             </div>
 
             {/* Prediction Modal */}
-            {showPredictionModal && <PredictionModal onClose={() => setShowPredictionModal(false)} semiFinal1={semiFinal1} semiFinal2={semiFinal2} />}
+            {showPredictionModal && <PredictionModal onClose={() => setShowPredictionModal(false)} homeTeam={finalist1 || undefined} awayTeam={finalist2 || undefined} onSuccess={() => setHasPredicted(true)} />}
         </main>
     );
 }
@@ -284,40 +300,47 @@ function TeamBracketCard({ team, score, isWinner, align, status }: { team?: Team
     );
 }
 
-function PredictionModal({ onClose, semiFinal1, semiFinal2 }: { onClose: () => void, semiFinal1?: Match, semiFinal2?: Match }) {
+interface PredictionModalProps {
+    onClose: () => void;
+    homeTeam?: Team;
+    awayTeam?: Team;
+    onSuccess: () => void;
+}
+
+function PredictionModal({ onClose, homeTeam, awayTeam, onSuccess }: PredictionModalProps) {
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [formData, setFormData] = useState({
         student_name: "",
         phone_number: "",
+        email: "",
         department: "",
         year: "",
-        sf1_score_home: "",
-        sf1_score_away: "",
-        sf2_score_home: "",
-        sf2_score_away: ""
+        final_score_home: "",
+        final_score_away: ""
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitting(true);
         try {
-            await submitPrediction({
+            await submitFinalPrediction({
                 student_name: formData.student_name,
                 phone_number: formData.phone_number,
+                email: formData.email,
                 department: formData.department,
                 year: formData.year,
-                sf1_score_home: Number(formData.sf1_score_home),
-                sf1_score_away: Number(formData.sf1_score_away),
-                sf2_score_home: Number(formData.sf2_score_home),
-                sf2_score_away: Number(formData.sf2_score_away)
+                final_score_home: Number(formData.final_score_home),
+                final_score_away: Number(formData.final_score_away)
             });
+            localStorage.setItem('hasPredictedFinal', 'true');
+            if (onSuccess) onSuccess();
             setSubmitted(true);
             setTimeout(onClose, 2000);
         } catch (error: any) {
             console.error("Prediction Error:", error);
             if (error.code === '23505') {
-                alert("Submission Failed: You have already submitted a prediction with this Phone Number.");
+                alert("Submission Failed: You (Phone/Email) have already submitted a prediction.");
             } else {
                 alert(`Failed to submit prediction: ${error.message || "Unknown error"}`);
             }
@@ -334,11 +357,15 @@ function PredictionModal({ onClose, semiFinal1, semiFinal2 }: { onClose: () => v
                         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
                     </div>
                     <h3 className="text-2xl font-black text-white mb-2">Prediction Submitted!</h3>
-                    <p className="text-zinc-400">Good luck! Winners will be announced after the matches.</p>
+                    <p className="text-zinc-400">Good luck! Winners will be announced after the Final.</p>
                 </div>
             </div>
         );
     }
+
+    // Default team names if matchup not yet decided
+    const homeName = homeTeam?.name || "Finalist 1";
+    const awayName = awayTeam?.name || "Finalist 2";
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
@@ -348,8 +375,8 @@ function PredictionModal({ onClose, semiFinal1, semiFinal2 }: { onClose: () => v
                 </button>
 
                 <div className="p-6 md:p-8">
-                    <h3 className="text-2xl font-black text-white mb-1">Predict & Win</h3>
-                    <p className="text-zinc-400 text-sm mb-6">Predict the scores correctly to win exciting prizes!</p>
+                    <h3 className="text-2xl font-black text-white mb-1">Final Showdown Prediction</h3>
+                    <p className="text-zinc-400 text-sm mb-6">Predict the score of the Grand Final to win!</p>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Personal Info */}
@@ -366,6 +393,14 @@ function PredictionModal({ onClose, semiFinal1, semiFinal2 }: { onClose: () => v
                                     value={formData.phone_number} onChange={e => setFormData({ ...formData, phone_number: e.target.value })}
                                 />
                             </div>
+                        </div>
+
+                        {/* Email Field */}
+                        <div className="space-y-1">
+                            <label className="text-xs font-bold text-zinc-500 uppercase">Email</label>
+                            <input required type="email" className="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2 text-white focus:border-yellow-500 outline-none"
+                                value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })}
+                            />
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -399,41 +434,33 @@ function PredictionModal({ onClose, semiFinal1, semiFinal2 }: { onClose: () => v
 
                         <div className="h-px bg-zinc-800 my-6" />
 
-                        {/* SF1 Prediction */}
-                        <div className="bg-black/50 p-4 rounded-xl border border-zinc-800/50">
-                            <div className="text-xs font-bold text-zinc-500 uppercase mb-3 text-center">Semi Final 1</div>
-                            <div className="flex items-center justify-between gap-4">
-                                <div className="text-right flex-1">
-                                    <span className="block text-sm font-bold text-white mb-1 truncate">{semiFinal1?.homeTeam.name || 'Team A'}</span>
-                                    <input required type="number" min="0" placeholder="0" className="w-16 bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-2 text-center text-white font-mono focus:border-yellow-500 outline-none"
-                                        value={formData.sf1_score_home} onChange={e => setFormData({ ...formData, sf1_score_home: e.target.value })}
-                                    />
-                                </div>
-                                <span className="text-zinc-600 font-black text-xl">:</span>
-                                <div className="text-left flex-1">
-                                    <span className="block text-sm font-bold text-white mb-1 truncate">{semiFinal1?.awayTeam.name || 'Team B'}</span>
-                                    <input required type="number" min="0" placeholder="0" className="w-16 bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-2 text-center text-white font-mono focus:border-yellow-500 outline-none"
-                                        value={formData.sf1_score_away} onChange={e => setFormData({ ...formData, sf1_score_away: e.target.value })}
-                                    />
-                                </div>
-                            </div>
-                        </div>
+                        {/* Final Prediction */}
+                        <div className="bg-gradient-to-br from-zinc-900 to-black p-6 rounded-xl border border-yellow-500/20 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-yellow-500/5 blur-2xl rounded-full -translate-y-1/2 translate-x-1/2" />
 
-                        {/* SF2 Prediction */}
-                        <div className="bg-black/50 p-4 rounded-xl border border-zinc-800/50">
-                            <div className="text-xs font-bold text-zinc-500 uppercase mb-3 text-center">Semi Final 2</div>
-                            <div className="flex items-center justify-between gap-4">
-                                <div className="text-right flex-1">
-                                    <span className="block text-sm font-bold text-white mb-1 truncate">{semiFinal2?.homeTeam.name || 'Team C'}</span>
-                                    <input required type="number" min="0" placeholder="0" className="w-16 bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-2 text-center text-white font-mono focus:border-yellow-500 outline-none"
-                                        value={formData.sf2_score_home} onChange={e => setFormData({ ...formData, sf2_score_home: e.target.value })}
+                            <div className="text-xs font-bold text-yellow-500 uppercase mb-4 text-center tracking-widest">Grand Final Score</div>
+                            <div className="flex items-center justify-between gap-4 relative z-10">
+                                <div className="flex flex-col items-center flex-1">
+                                    {homeTeam?.logo ? (
+                                        <img src={homeTeam.logo} alt={homeName} className="w-12 h-12 md:w-16 md:h-16 object-contain mb-2" />
+                                    ) : (
+                                        <div className="w-12 h-12 md:w-16 md:h-16 animate-pulse" />
+                                    )}
+                                    <span className="block text-xs md:text-sm font-black text-white mb-2 truncate uppercase">{homeName}</span>
+                                    <input required type="number" min="0" placeholder="0" className="w-16 md:w-20 bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-3 text-center text-white text-xl font-black focus:border-yellow-500 outline-none shadow-inner"
+                                        value={formData.final_score_home} onChange={e => setFormData({ ...formData, final_score_home: e.target.value })}
                                     />
                                 </div>
-                                <span className="text-zinc-600 font-black text-xl">:</span>
-                                <div className="text-left flex-1">
-                                    <span className="block text-sm font-bold text-white mb-1 truncate">{semiFinal2?.awayTeam.name || 'Team D'}</span>
-                                    <input required type="number" min="0" placeholder="0" className="w-16 bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-2 text-center text-white font-mono focus:border-yellow-500 outline-none"
-                                        value={formData.sf2_score_away} onChange={e => setFormData({ ...formData, sf2_score_away: e.target.value })}
+                                <div className="text-zinc-600 font-black text-xl md:text-2xl pt-8">VS</div>
+                                <div className="flex flex-col items-center flex-1">
+                                    {awayTeam?.logo ? (
+                                        <img src={awayTeam.logo} alt={awayName} className="w-12 h-12 md:w-16 md:h-16 object-contain mb-2" />
+                                    ) : (
+                                        <div className="w-12 h-12 md:w-16 md:h-16 animate-pulse" />
+                                    )}
+                                    <span className="block text-xs md:text-sm font-black text-white mb-2 truncate uppercase">{awayName}</span>
+                                    <input required type="number" min="0" placeholder="0" className="w-16 md:w-20 bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-3 text-center text-white text-xl font-black focus:border-yellow-500 outline-none shadow-inner"
+                                        value={formData.final_score_away} onChange={e => setFormData({ ...formData, final_score_away: e.target.value })}
                                     />
                                 </div>
                             </div>
@@ -442,7 +469,7 @@ function PredictionModal({ onClose, semiFinal1, semiFinal2 }: { onClose: () => v
                         <button
                             type="submit"
                             disabled={submitting}
-                            className="w-full bg-yellow-500 disabled:bg-zinc-700 disabled:text-zinc-500 text-black font-black uppercase tracking-wider py-4 rounded-xl hover:bg-yellow-400 transition-colors"
+                            className="w-full bg-yellow-500 disabled:bg-zinc-700 disabled:text-zinc-500 text-black font-black uppercase tracking-wider py-4 rounded-xl hover:bg-yellow-400 transition-colors shadow-lg shadow-yellow-500/20"
                         >
                             {submitting ? 'Submitting...' : 'Submit Prediction'}
                         </button>

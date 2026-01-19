@@ -41,6 +41,10 @@ export const calculateStandings = (matches: any[]): { "Pool A": TeamStats[], "Po
     matches.forEach(match => {
         if (match.status !== 'FINISHED' && match.status !== 'LIVE') return;
 
+        // FREEZE STANDINGS: Ignore Knockout Matches
+        const isKnockout = match.round?.toLowerCase().includes("semi") || match.round?.toLowerCase().includes("final");
+        if (isKnockout) return;
+
         // Skip if team IDs are not found (legacy data check)
         if (!initialStats[match.homeTeamId] || !initialStats[match.awayTeamId]) return;
 

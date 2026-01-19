@@ -174,7 +174,7 @@ export default function KnockoutBracket({ liveMatches }: KnockoutBracketProps) {
 
                         <div className="flex flex-col items-center gap-1">
                             <div className="text-2xl md:text-3xl font-black text-white">VS</div>
-                            <div className="text-[10px] text-zinc-500 font-mono">13 JAN</div>
+                            <div className="text-[10px] text-zinc-500 font-mono">19 JAN • 17:00</div>
                         </div>
 
                         {/* Finalist 2 */}

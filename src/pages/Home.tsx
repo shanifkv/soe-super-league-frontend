@@ -5,7 +5,7 @@ import soeLogo from "../assets/soe-super-league-logo.png";
 import { type Match } from "../components/MatchCenter";
 import KnockoutBracket from "../components/KnockoutBracket";
 import { subscribeToMatches } from "../lib/adminService";
-import { MATCHES as STATIC_MATCHES } from "../data/fixtures";
+import { MATCHES as STATIC_MATCHES, TEAMS } from "../data/fixtures";
 
 export default function Home() {
   const [isMuted, setIsMuted] = useState(true);
@@ -175,7 +175,33 @@ function FinalHeroCard({ matches }: { matches: Match[] }) {
     if (!match) {
       const staticMatch = STATIC_MATCHES.find(m => m.round === roundName);
       if (staticMatch) {
-        match = { ...staticMatch, status: "SCHEDULED", score: { home: 0, away: 0 } } as unknown as Match;
+        match = { ...staticMatch, status: "FINISHED", score: { home: 5, away: 2 } } as unknown as Match;
+      }
+    }
+    // Force override for Grand Final if it exists but not finished (simulate backend update)
+    if (match && match.round === "Grand Final") {
+      match = { ...match, status: "FINISHED", score: { home: 5, away: 2 } };
+    }
+
+    // Explicitly create Grand Final if missing
+    if (!match && (roundName === "Grand Final" || roundName === "Final")) {
+      const homeTeam = TEAMS.find(t => t.id === "47"); // Aetoz
+      const awayTeam = TEAMS.find(t => t.id === "30"); // Baveria
+
+      if (homeTeam && awayTeam) {
+        match = {
+          id: "grand_final",
+          round: "Grand Final",
+          homeTeam: homeTeam,
+          awayTeam: awayTeam,
+          homeTeamId: "47",
+          awayTeamId: "30",
+          status: "FINISHED",
+          score: { home: 5, away: 2 },
+          date: "2026-01-19T17:00:00",
+          events: [],
+          minute: 90
+        } as unknown as Match;
       }
     }
     return match;
@@ -209,7 +235,7 @@ function FinalHeroCard({ matches }: { matches: Match[] }) {
         {/* Header Label */}
         <div className="flex items-center gap-3 relative z-10 animate-fade-in">
           <h3 className="text-yellow-500 font-bold tracking-[0.2em] uppercase text-xs md:text-lg border border-yellow-500/30 px-3 py-1 md:px-4 md:py-1.5 rounded-full bg-yellow-500/5 backdrop-blur-sm">
-            GRAND FINAL
+            CHAMPIONS CROWNED
           </h3>
         </div>
 
@@ -218,27 +244,34 @@ function FinalHeroCard({ matches }: { matches: Match[] }) {
 
           {/* Team 1 */}
           <div className="flex flex-col items-center gap-2 md:gap-4 order-1">
-            <div className={`w-16 h-16 md:w-40 md:h-40 rounded-full border-2 md:border-4 border-yellow-500/30 p-2 md:p-4 bg-black/50 shadow-[0_0_30px_rgba(234,179,8,0.1)] transition-transform duration-500 group-hover:scale-110 flex items-center justify-center`}>
+            <div className={`relative w-16 h-16 md:w-40 md:h-40 rounded-full border-4 md:border-6 border-yellow-400 p-2 md:p-4 bg-gradient-to-br from-yellow-500/20 to-black shadow-[0_0_50px_rgba(234,179,8,0.5)] transition-transform duration-500 group-hover:scale-110 flex items-center justify-center`}>
+              {/* Crown Icon */}
+              <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-4xl animate-bounce drop-shadow-[0_0_10px_rgba(234,179,8,1)]">👑</div>
+
               {finalist1 ? (
                 <img src={finalist1.logo} alt={finalist1.name} className="w-full h-full object-contain drop-shadow-xl" />
               ) : (
                 <div className="w-full h-full bg-zinc-800 rounded-full animate-pulse" />
               )}
             </div>
-            <span className="text-lg md:text-3xl font-black text-white uppercase text-center leading-tight tracking-tight drop-shadow-md">
+            <span className="text-lg md:text-3xl font-black text-yellow-400 uppercase text-center leading-tight tracking-tight drop-shadow-[0_0_10px_rgba(234,179,8,0.5)]">
               {finalist1?.name || "TBD"}
+            </span>
+            <span className="text-xs md:text-sm font-bold text-yellow-500 tracking-widest uppercase border border-yellow-500/50 px-2 py-0.5 rounded backdrop-blur">
+              WINNER
             </span>
           </div>
 
           {/* VS & Time */}
           <div className="flex flex-col items-center gap-1 order-2 md:order-2 my-1 md:my-0">
-            <span className="text-3xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-br from-yellow-300 to-yellow-600 italic tracking-tighter drop-shadow-sm transform -rotate-6">
-              VS
-            </span>
-            <div className="bg-yellow-500/20 border border-yellow-500/40 rounded-full px-3 py-1 text-yellow-500 font-mono text-[9px] md:text-xs tracking-widest uppercase backdrop-blur-md mb-1 md:mb-2">
-              19 JAN • 05:00 PM
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-5xl md:text-9xl font-mono font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-500 tracking-tighter drop-shadow-2xl">
+                5 - 2
+              </span>
+              <div className="bg-zinc-800/80 border border-white/10 rounded px-3 py-1 text-zinc-400 font-bold text-[10px] md:text-xs tracking-widest uppercase backdrop-blur-md">
+                FULL TIME
+              </div>
             </div>
-            <FinalCountdown targetDate="2026-01-19T17:00:00" />
           </div>
 
           {/* Team 2 */}
@@ -258,6 +291,7 @@ function FinalHeroCard({ matches }: { matches: Match[] }) {
         </div>
 
         {/* CTA Button */}
+        {/* Prediction Hidden
         <div className="mt-4 relative z-20 flex flex-col items-center gap-2 w-full md:w-auto">
           <Link to="/knockout?predict=true" className="group/btn relative w-full md:w-auto inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-yellow-500 to-yellow-400 px-6 py-3 md:px-16 md:py-4 font-black uppercase tracking-widest text-black transition-all duration-300 hover:scale-105 shadow-[0_0_40px_rgba(234,179,8,0.4)] hover:shadow-[0_0_60px_rgba(255,255,255,0.6)]">
             <span className="relative z-10 flex items-center gap-2 text-xs md:text-base">
@@ -269,6 +303,7 @@ function FinalHeroCard({ matches }: { matches: Match[] }) {
             One prediction per user
           </p>
         </div>
+        */}
 
       </div>
     </div>
